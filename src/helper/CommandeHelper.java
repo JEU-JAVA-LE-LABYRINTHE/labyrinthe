@@ -1,23 +1,11 @@
 package helper;
 
-/**
- * Classe Helper pour lister et afficher les commandes disponibles du jeu.
- * Centralize la documentation de toutes les commandes disponibles pour le joueur.
- */
 public class CommandeHelper {
 
-    /**
-     * Affiche la liste complète des commandes disponibles dans le jeu.
-     * @return String contenant la liste formatée des commandes
-     */
     public static String afficherAide() {
         return getAideComplette();
     }
 
-    /**
-     * Retourne l'aide formatée pour le joueur.
-     * @return String contenant l'aide formatée
-     */
     public static String getAideComplette() {
         return formatSection("COMMANDES DISPONIBLES")
             + "\n\n" + construireSection("🕐 DÉPLACEMENTS TEMPORELS",
@@ -57,18 +45,12 @@ public class CommandeHelper {
             + "\n\n" + formatFooter();
     }
 
-    /**
-     * Formate un titre de section
-     */
     private static String formatSection(String titre) {
         return "╔════════════════════════════════════════════════════════════════╗\n"
             + "║                    " + String.format("%-42s", titre) + "║\n"
             + "╚════════════════════════════════════════════════════════════════╝";
     }
 
-    /**
-     * Construit une section avec titre et lignes
-     */
     private static String construireSection(String titre, String... lignes) {
         StringBuilder sb = new StringBuilder(titre).append("\n");
         for (String ligne : lignes) {
@@ -77,9 +59,6 @@ public class CommandeHelper {
         return sb.toString();
     }
 
-    /**
-     * Formate le pied de page
-     */
     private static String formatFooter() {
         return "═══════════════════════════════════════════════════════════════════\n"
             + "💡 RACCOURCIS : Utilisez P ou PRENDRE, D ou DEPOSER, L avec REGARDER\n"
@@ -87,10 +66,6 @@ public class CommandeHelper {
             + "═══════════════════════════════════════════════════════════════════\n";
     }
 
-    /**
-     * Retourne une aide simple et rapide (version courte).
-     * @return String avec l'aide compact
-     */
     public static String getAideSimple() {
         return ""
             + "Commandes scénario: O/OUEST, E/EST, Z\n"
@@ -100,11 +75,6 @@ public class CommandeHelper {
             + "Jeu: SAUVEGARDER, CHARGER, NOUVELLE, QUITTER\n";
     }
 
-    /**
-     * Retourne les commandes disponibles pour une catégorie spécifique.
-     * @param categorie La catégorie des commandes
-     * @return String avec les commandes de la catégorie
-     */
     public static String getCommandesParCategorie(String categorie) {
         return switch (categorie.toLowerCase()) {
             case "deplacement", "temps", "movement" ->
@@ -138,10 +108,6 @@ public class CommandeHelper {
         };
     }
 
-    /**
-     * Retourne les raccourcis de commandes.
-     * @return String avec les raccourcis clés
-     */
     public static String getShortcuts() {
         return construireSection("RACCOURCIS CLÉS",
             "O / E / Z            (déplacements)",

@@ -31,15 +31,11 @@ public class JeuController {
             return false;
         }
         
-        // On pousse aussi l'état dans la console pour debug.
         System.out.println(msg);
         System.out.println(partie.statusTexte());
         return true;
     }
     
-    /**
-     * Exécute le mouvement approprié selon la direction
-     */
     private String executerMouvement(String direction) {
         return switch (direction) {
             case "ouest", "o" -> partie.moveOuest();
@@ -97,9 +93,6 @@ public class JeuController {
         return formatTime(sec);
     }
     
-    /**
-     * Formate un temps en secondes au format MM:SS
-     */
     private String formatTime(int sec) {
         int minutes = sec / 60;
         int secondes = sec % 60;

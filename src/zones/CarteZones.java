@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CarteZones {
     private final Zaman zaman;
-    private final List<Zones> zonesTemporelles; // ordre Ouest->Est dans le scénario (0 -> préhistoire -> egypt -> moyen age -> futur)
+    private final List<Zones> zonesTemporelles;
 
     public CarteZones() {
         this.zaman = new Zaman();
@@ -48,7 +48,7 @@ public class CarteZones {
         }
         int idx = indexDe(zoneActuelle);
         if (idx < 0) return null;
-        if (idx >= zonesTemporelles.size() - 1) return zonesTemporelles.get(idx); // reste sur la dernière zone
+        if (idx >= zonesTemporelles.size() - 1) return zonesTemporelles.get(idx);
         return zonesTemporelles.get(idx + 1);
     }
 
