@@ -1,0 +1,120 @@
+package controller;
+
+import jeu.Partie;
+import zones.Zones;
+import java.util.Map;
+
+public class JeuController {
+    private final Partie partie;
+    
+    private static final Map<String, String> DIRECTION_MAP = Map.ofEntries(
+        Map.entry("ouest", "moveOuest"),
+        Map.entry("o", "moveOuest"),
+        Map.entry("est", "moveEst"),
+        Map.entry("e", "moveEst"),
+        Map.entry("z", "retourZaman")
+    );
+
+    public JeuController() {
+        this.partie = new Partie();
+    }
+
+    public void demarrerJeu() {
+        partie.demarrer();
+    }
+
+    public boolean deplacerJoueur(String direction) {
+        String d = direction == null ? "" : direction.trim().toLowerCase();
+        String msg = executerMouvement(d);
+        
+        if (msg == null) {
+            return false;
+        }
+        
+        // On pousse aussi l'état dans la console pour debug.
+        System.out.println(msg);
+        System.out.println(partie.statusTexte());
+        return true;
+    }
+    
+    /**
+     * Exécute le mouvement approprié selon la direction
+     */
+    private String executerMouvement(String direction) {
+        return switch (direction) {
+            case "ouest", "o" -> partie.moveOuest();
+            case "est", "e" -> partie.moveEst();
+            case "z" -> partie.retourZaman();
+            default -> null;
+        };
+    }
+
+    public String ramasserObjet(String nomObjet) {
+        String msg = partie.prendreObjet(nomObjet);
+        System.out.println(msg);
+        return msg;
+    }
+
+    public void afficherEtatJeu() {
+        System.out.println(partie.statusTexte());
+    }
+
+    public String traiterCommande(String commande) {
+        return partie.traiterCommande(commande);
+    }
+
+    public boolean isJeuEnCours() {
+        return partie.isJeuEnCours();
+    }
+
+    public String getNomJoueur() {
+        return partie.getJoueur().getNom();
+    }
+
+    public int getScore() {
+        return partie.getJoueur().getScore();
+    }
+
+    public int getNombreVies() {
+        return partie.getJoueur().getNombreVies();
+    }
+
+    public Zones getZoneCourante() {
+        return partie.getZoneCourante();
+    }
+
+    public String getNomZoneCourante() {
+        Zones z = getZoneCourante();
+        return z == null ? "-" : z.getNom();
+    }
+
+    public int getTempsRestantZoneSec() {
+        return partie.getTempsRestantZoneSecPublic();
+    }
+
+    public String getTempsFormate() {
+        int sec = getTempsRestantZoneSec();
+        return formatTime(sec);
+    }
+    
+    /**
+     * Formate un temps en secondes au format MM:SS
+     */
+    private String formatTime(int sec) {
+        int minutes = sec / 60;
+        int secondes = sec % 60;
+        return String.format("%02d:%02d", minutes, secondes);
+    }
+
+    public String sauvegarder() {
+        return partie.sauvegarder();
+    }
+
+    public String charger() {
+        return partie.charger();
+    }
+
+    public String nouvellePartie() {
+        return partie.nouvellePartie();
+    }
+}

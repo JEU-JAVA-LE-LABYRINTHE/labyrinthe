@@ -1,0 +1,4 @@
+# Fichier audio placeholder - Futur
+# Remplacer par un vrai fichier audio pour la musique d'ambiance du Futur
+# Durée recommandée : 2-3 minutes en boucle
+# Format : WAV 44.1kHz 16-bit

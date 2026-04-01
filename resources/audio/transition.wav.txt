@@ -1,0 +1,4 @@
+# Fichier audio placeholder - Transition
+# Remplacer par un vrai fichier audio pour le jingle de transition entre zones
+# Durée recommandée : 1-3 secondes
+# Format : WAV 44.1kHz 16-bit
