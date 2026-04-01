@@ -26,7 +26,6 @@ src/
 └── utils/            # Constantes (Constants.java)
 
 resources/
-├── audio/            # Fichiers audio du jeu
 └── images/           # Images des zones
 ```
 
@@ -100,11 +99,6 @@ java -cp out launcher.Launcher
 - Navigation entre zones
 - Architecture MVC
 
-🟡 **En Développement**
-- Zones temporelles (Préhistoire, Égypte, Moyen Âge, Futur)
-- Système de sauvegarde/chargement
-- Gestion audio
-
 ❌ **Non Implémenté**
 - Énigmes des zones
 - Coffres et lettres
@@ -119,7 +113,6 @@ Le projet est structuré pour permettre le développement parallèle:
 3. **Zone Moyen Âge** - À assigner
 4. **Zone Futur** - À assigner
 5. **Système de Sauvegarde** - À assigner
-6. **Gestion Audio** - À assigner
 
 Chaque zone hérite de `Zones.java` et implement ses propres énigmes et coffres.
 
