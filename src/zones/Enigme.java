@@ -5,14 +5,14 @@ import java.io.Serializable;
 public class Enigme implements Serializable {
     private static final long serialVersionUID = 1L;
     private String question;
-    private String bonneReponse;
+    private String reponseCorrecte;
     private String indice;
     private boolean resolue;
     private int tentativesRestantes;
 
-    public Enigme(String question, String bonneReponse, String indice) {
+    public Enigme(String question, String reponseCorrecte, String indice) {
         this.question = question;
-        this.bonneReponse = bonneReponse;
+        this.reponseCorrecte = reponseCorrecte;
         this.indice = indice;
         this.resolue = false;
         this.tentativesRestantes = 3;
@@ -29,7 +29,7 @@ public class Enigme implements Serializable {
     public boolean tenter(String reponse) {
         if (reponse == null) return false;
         tentativesRestantes--;
-        if (reponse.equalsIgnoreCase(bonneReponse)) {
+        if (reponse.equalsIgnoreCase(reponseCorrecte)) {
             resolue = true;
             return true;
         }

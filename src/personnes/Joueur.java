@@ -3,6 +3,7 @@ package personnes;
 import inventaire.Inventaire;
 import items.Lettre;
 import zones.Zones;
+import personnes.Personne;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,6 +44,19 @@ public class Joueur extends Personne {
     public void ajouterLettre(Lettre lettre) {
         if (lettre == null) return;
         lettres.add(lettre);
+    }
+
+    public void gererObjets() {
+        inventaire.getObjets().forEach(item -> System.out.println("- " + item.getNom()));
+    }
+
+    public void setZone(Zones z) {
+        seDeplacer(z);
+    }
+
+    @Override
+    public void afficherInfo() {
+        System.out.println(toString());
     }
 
     public void ajouterObjet(inventaire.Inventaire inventaire, items.Item item) {

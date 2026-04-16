@@ -13,10 +13,13 @@ public class Launcher {
         } catch (Exception e) {
             System.err.println("Impossible de définir le look and feel: " + e.getMessage());
         }
+        lancerJeu();
+    }
 
+    public static void lancerJeu() {
         CommandeHelper.afficherAide();
         System.out.println();
-        
+
         SwingUtilities.invokeLater(() -> {
             LabyrintheFrame frame = new LabyrintheFrame();
             JeuController jeuController = new JeuController();

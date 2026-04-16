@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LabyrinthePanel extends JPanel {
@@ -28,7 +29,7 @@ public class LabyrinthePanel extends JPanel {
         ZONE_IMAGE_MAP.put("Préhistoire", "Zone 1.jpg");
         ZONE_IMAGE_MAP.put("Égypte antique", "Zone 3.jpg");
         ZONE_IMAGE_MAP.put("Moyen Âge", "Zone 2_1.jpg");
-        ZONE_IMAGE_MAP.put("Futur", "Zone 4.jpg");
+        ZONE_IMAGE_MAP.put("Futur lointain", "Zone 4.jpg");
         
         // Images variantes selon les états
         Map<String, String> prehistoireStates = new HashMap<>();
@@ -53,7 +54,7 @@ public class LabyrinthePanel extends JPanel {
         futurStates.put("default", "Zone 4.jpg");
         futurStates.put("coffre_trouve", "Zone 4_1.jpg");
         futurStates.put("terminee", "Zone 4_2.jpg");
-        ZONE_IMAGE_STATES.put("Futur", futurStates);
+        ZONE_IMAGE_STATES.put("Futur lointain", futurStates);
         
         // Zaman n'a pas de variantes (zone centrale)
         Map<String, String> zamanStates = new HashMap<>();
@@ -83,11 +84,12 @@ public class LabyrinthePanel extends JPanel {
     
     private void mettreAJourImageZone() {
         if (!isControllerValide()) return;
-        
+
         String nomZone = jeuController.getNomZoneCourante();
         String etatZone = determinerEtatZone(nomZone);
         String nomImage = obtenirImageSelonEtat(nomZone, etatZone);
-        
+
+        if (nomImage == null) return;
         if (!nomImage.equals(zoneActuelleChargee)) {
             chargerImageParDefaut(nomImage);
             zoneActuelleChargee = nomImage;
@@ -111,10 +113,10 @@ public class LabyrinthePanel extends JPanel {
         Zones zone = jeuController.getZoneCourante();
         if (zone == null) return "default";
         
-        // Priorité : terminée > coffre trouvé > défaut
-        if (zone.isTerminee()) {
+        // Priorité : coffre trouvé > observée > défaut
+        if (zone.isCoffreTrouve()) {
             return "terminee";
-        } else if (zone.isCoffreTrouve()) {
+        } else if (zone.isObserve()) {
             return "coffre_trouve";
         } else {
             return "default";
@@ -129,8 +131,8 @@ public class LabyrinthePanel extends JPanel {
         if (etatsZone != null && etatsZone.containsKey(etat)) {
             return etatsZone.get(etat);
         }
-        // Fallback sur l'image par défaut
-        return ZONE_IMAGE_MAP.get(nomZone);
+        String img = ZONE_IMAGE_MAP.get(nomZone);
+        return img != null ? img : "Zone0.jpg";
     }
     
     /**
@@ -219,6 +221,11 @@ public class LabyrinthePanel extends JPanel {
         
         // Dessiner le message
         dessinerMessage(g);
+
+        // Overlay victoire
+        if (jeuController != null && jeuController.isVictoire()) {
+            dessinerVictoire(g);
+        }
     }
     
     private void dessinerInformations(Graphics g) {
@@ -229,31 +236,40 @@ public class LabyrinthePanel extends JPanel {
         
         String[] infos = {
             "Joueur: " + jeuController.getNomJoueur(),
-            "Temps: " + jeuController.getTempsFormate(),
             "Score: " + jeuController.getScore(),
             "Zone: " + jeuController.getNomZoneCourante(),
             "Vies: " + jeuController.getNombreVies()
         };
-        
+
         for (int i = 0; i < infos.length; i++) {
             g.drawString(infos[i], 10, 25 + (i * 20));
         }
-        
-        // Temps restant avec couleur
-        int tempsRestant = jeuController.getTempsRestantZoneSec();
-        g.setColor(obtenirCouleurTemps(tempsRestant));
-        g.drawString("Reste: " + tempsRestant + "s", 10, 125);
+
+        // Inventaire — côté droit
+        dessinerInventaire(g);
     }
-    
-    /**
-     * Détermine la couleur en fonction du temps restant
-     */
-    private Color obtenirCouleurTemps(int tempsRestant) {
-        if (tempsRestant < 30) return Color.RED;
-        if (tempsRestant < 60) return Color.ORANGE;
-        return Color.GREEN;
+
+    private void dessinerInventaire(Graphics g) {
+        List<String> items = jeuController.getInventaireItems();
+        int x = getWidth() - 170;
+        int y = 25;
+
+        g.setFont(new Font("Arial", Font.BOLD, 13));
+        g.setColor(new Color(255, 215, 0));
+        g.drawString("[ SAC ]", x, y);
+
+        g.setFont(new Font("Arial", Font.PLAIN, 12));
+        if (items.isEmpty()) {
+            g.setColor(Color.LIGHT_GRAY);
+            g.drawString("(vide)", x, y + 18);
+        } else {
+            for (int i = 0; i < items.size(); i++) {
+                g.setColor(Color.WHITE);
+                g.drawString("• " + items.get(i), x, y + 18 + (i * 17));
+            }
+        }
     }
-    
+
     private void dessinerMessage(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("TimesRoman", Font.BOLD + Font.ITALIC, 18));

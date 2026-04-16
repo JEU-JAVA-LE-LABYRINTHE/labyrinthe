@@ -64,28 +64,24 @@ public class LabyrintheFrame extends JFrame {
     private void demarrerNouveauJeu() {
         executerAvecControleur(jeuController -> {
             String msg = jeuController.nouvellePartie();
-            panneauControle.repaint();
             labyrinthePanel.repaint();
-            afficherDialog(msg, "Info", JOptionPane.INFORMATION_MESSAGE);
+            panneauControle.afficherDansConsole(msg);
         });
     }
-    
+
     private void sauvegarderJeu() {
         if (jeuController == null || !jeuController.isJeuEnCours()) {
-            afficherDialog("Aucun jeu en cours", "Erreur", JOptionPane.ERROR_MESSAGE);
+            panneauControle.afficherDansConsole("[Erreur] Aucun jeu en cours.");
             return;
         }
-        
-        String msg = jeuController.sauvegarder();
-        afficherDialog(msg, "Info", JOptionPane.INFORMATION_MESSAGE);
+        panneauControle.afficherDansConsole(jeuController.sauvegarder());
     }
-    
+
     private void chargerJeu() {
         executerAvecControleur(jeuController -> {
             String msg = jeuController.charger();
             labyrinthePanel.repaint();
-            panneauControle.repaint();
-            afficherDialog(msg, "Info", JOptionPane.INFORMATION_MESSAGE);
+            panneauControle.afficherDansConsole(msg);
         });
     }
     
@@ -119,8 +115,35 @@ public class LabyrintheFrame extends JFrame {
         this.jeuController = jeuController;
         labyrinthePanel.setJeuController(jeuController);
         panneauControle.setJeuController(jeuController);
+
+        String[] options = {"Nouvelle partie", "Charger une partie"};
+        int choix = JOptionPane.showOptionDialog(this,
+            "Bienvenue dans le Labyrinthe Temporel !\nQue souhaitez-vous faire ?",
+            "Labyrinthe Temporel",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+            null, options, options[0]);
+
+        if (choix == 1) {
+            String msg = jeuController.charger();
+            afficherIntroduction(jeuController.getNomJoueur());
+            panneauControle.afficherDansConsole(msg);
+        } else {
+            String nom = JOptionPane.showInputDialog(this,
+                "Quel est le nom de votre explorateur ?", "Kairox");
+            if (nom == null || nom.trim().isEmpty()) nom = "Kairox";
+            jeuController.demarrerNouvellePartie(nom.trim());
+            afficherIntroduction(nom.trim());
+        }
+        panneauControle.afficherDansConsole(jeuController.traiterCommande("REGARDER"));
     }
-    
+
+    private void afficherIntroduction(String nom) {
+        panneauControle.afficherDansConsole("Bienvenue, " + nom + " !");
+        panneauControle.afficherDansConsole("Collectez une lettre dans chaque époque, formez le mot secret, déverrouillez la sortie.");
+        panneauControle.afficherDansConsole("Tapez AIDE pour les actions disponibles.");
+        panneauControle.afficherDansConsole("");
+    }
+
     public LabyrinthePanel getLabyrinthePanel() {
         return labyrinthePanel;
     }

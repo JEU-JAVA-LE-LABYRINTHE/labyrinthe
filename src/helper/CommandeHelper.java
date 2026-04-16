@@ -30,7 +30,6 @@ public class CommandeHelper {
                 "  Exemples: REPONDRE Feu  /  R Sphinx  /  R Épée"
             )
             + "\n" + construireSection("ℹ️  INFORMATIONS",
-                "TEMPS / T            : Afficher le temps restant dans la zone",
                 "STATUS / STAT / ETAT : Afficher l'état du jeu (vies + lettres)"
             )
             + "\n" + construireSection("💾 PARTIE & SAUVEGARDE",
@@ -71,13 +70,13 @@ public class CommandeHelper {
             + "Commandes scénario: O/OUEST, E/EST, Z\n"
             + "Objets: P/PRENDRE, D/DEPOSER, SAC/INVENTAIRE\n"
             + "Exploration: L/REGARDER, CH/CHERCHER, OUVRIR, I/INDICE, R/REPONDRE\n"
-            + "Infos: TEMPS, STATUS, AIDE\n"
+            + "Infos: STATUS, AIDE\n"
             + "Jeu: SAUVEGARDER, CHARGER, NOUVELLE, QUITTER\n";
     }
 
     public static String getCommandesParCategorie(String categorie) {
         return switch (categorie.toLowerCase()) {
-            case "deplacement", "temps", "movement" ->
+            case "deplacement", "movement" ->
                 "O/OUEST : Avancer dans le temps\n" +
                 "E/EST : Reculer dans le temps\n" +
                 "Z : Retour à Zaman\n";
@@ -95,7 +94,6 @@ public class CommandeHelper {
                 "R/REPONDRE <reponse> : Répondre à l'énigme\n";
 
             case "info", "information", "status" ->
-                "TEMPS/T : Temps restant\n" +
                 "STATUS/ETAT : État du jeu\n" +
                 "AIDE/H/? : Afficher l'aide\n";
 
@@ -115,7 +113,7 @@ public class CommandeHelper {
             "L                    (regarder)",
             "CH                   (chercher)",
             "I / R                (indice/répondre)",
-            "T / STAT             (temps/état)",
+            "STAT                 (état)",
             "H / ? / AIDE         (aide)"
         );
     }

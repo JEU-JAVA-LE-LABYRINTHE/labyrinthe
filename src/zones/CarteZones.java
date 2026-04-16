@@ -4,16 +4,57 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CarteZones {
+
+    private static final String[][] MOTS_ENIGMES = {
+        {"LION", "Quel est le roi des animaux ?"},
+        {"LUNE", "Quel astre éclaire la nuit ?"},
+        {"MIEL", "Quel produit sucré est fabriqué par les abeilles ?"},
+        {"OURS", "Quel grand mammifère sauvage hiberne en hiver ?"},
+        {"PAIX", "Quel mot désigne l'absence de guerre ?"},
+        {"PAIN", "Quel aliment de base est fabriqué à partir de farine ?"},
+        {"PONT", "Quelle construction permet de traverser une rivière ?"},
+        {"ROSE", "Quelle fleur est connue pour ses épines ?"},
+        {"VENT", "Quel phénomène fait tourner les moulins ?"},
+        {"TOUR", "Quelle haute construction se dresse dans les châteaux forts ?"},
+        {"LOUP", "Quel animal sauvage hurle à la lune ?"},
+        {"DUNE", "Quelle colline de sable se trouve dans le désert ?"},
+        {"EPEE", "Quelle arme blanche portait le chevalier médiéval ?"},
+        {"CLEF", "Quel objet permet d'ouvrir une serrure ?"},
+        {"SOIF", "Quelle sensation pousse à boire ?"}
+    };
+
     private final Zaman zaman;
-    private final List<Zones> zonesTemporelles;
+    private final List<Zones> zones;
+    private final Zones zoneDepart;
+    private final int nombreZones;
 
     public CarteZones() {
-        this.zaman = new Zaman();
-        this.zonesTemporelles = new ArrayList<>();
-        zonesTemporelles.add(new Prehistoire());
-        zonesTemporelles.add(new EgypteAntique());
-        zonesTemporelles.add(new MoyenAge());
-        zonesTemporelles.add(new Futur());
+        int idx = (int) (Math.random() * MOTS_ENIGMES.length);
+        String mot      = MOTS_ENIGMES[idx][0];
+        String question = MOTS_ENIGMES[idx][1];
+
+        this.zaman = new Zaman(mot, question);
+        this.zones = new ArrayList<>();
+        creerZones(mot);
+        this.zoneDepart = zaman;
+        this.nombreZones = zones.size() + 1;
+    }
+
+    private void creerZones(String mot) {
+        Prehistoire p = new Prehistoire();
+        EgypteAntique e = new EgypteAntique();
+        MoyenAge m = new MoyenAge();
+        Futur f = new Futur();
+
+        p.definirLettreCollectable(String.valueOf(mot.charAt(0)));
+        e.definirLettreCollectable(String.valueOf(mot.charAt(1)));
+        m.definirLettreCollectable(String.valueOf(mot.charAt(2)));
+        f.definirLettreCollectable(String.valueOf(mot.charAt(3)));
+
+        zones.add(p);
+        zones.add(e);
+        zones.add(m);
+        zones.add(f);
     }
 
     public Zaman getZaman() {
@@ -21,22 +62,30 @@ public class CarteZones {
     }
 
     public Zones getZoneDepart() {
-        return zaman;
+        return zoneDepart;
     }
 
-    public Zones obtenirZoneParNom(String nom) {
+    public int getNombreZones() {
+        return nombreZones;
+    }
+
+    public Zones obtenirZone(String nom) {
         if (nom == null) return null;
         if (zaman.getNom().equalsIgnoreCase(nom.trim())) return zaman;
-        for (Zones z : zonesTemporelles) {
+        for (Zones z : zones) {
             if (z.getNom().equalsIgnoreCase(nom.trim())) return z;
         }
         return null;
     }
 
+    public void debloquerZone(String nom) {
+        // À implémenter selon la logique de progression
+    }
+
     private int indexDe(Zones zone) {
         if (zone == null) return -1;
-        for (int i = 0; i < zonesTemporelles.size(); i++) {
-            if (zonesTemporelles.get(i) == zone) return i;
+        for (int i = 0; i < zones.size(); i++) {
+            if (zones.get(i) == zone) return i;
         }
         return -1;
     }
@@ -44,12 +93,12 @@ public class CarteZones {
     public Zones avancerTemps(Zones zoneActuelle) {
         if (zoneActuelle == null) return null;
         if (zoneActuelle == zaman) {
-            return zonesTemporelles.get(0);
+            return zones.get(0);
         }
         int idx = indexDe(zoneActuelle);
         if (idx < 0) return null;
-        if (idx >= zonesTemporelles.size() - 1) return zonesTemporelles.get(idx);
-        return zonesTemporelles.get(idx + 1);
+        if (idx >= zones.size() - 1) return zones.get(idx);
+        return zones.get(idx + 1);
     }
 
     public Zones reculerTemps(Zones zoneActuelle) {
@@ -58,8 +107,7 @@ public class CarteZones {
             return zaman;
         }
         int idx = indexDe(zoneActuelle);
-        if (idx <= 0) return zaman; 
-        return zonesTemporelles.get(idx - 1);
+        if (idx <= 0) return zaman;
+        return zones.get(idx - 1);
     }
 }
-

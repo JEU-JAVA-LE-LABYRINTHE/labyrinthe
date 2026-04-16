@@ -22,10 +22,16 @@ public class Lettre extends Item {
 
     @Override
     public void utiliser() {
+        System.out.println("Vous utilisez la lettre : " + caractere);
     }
 
     @Override
     public void examiner() {
+        System.out.println("Lettre : " + caractere + " (origine : " + zoneOrigine + ")");
+    }
+
+    public void afficher() {
+        System.out.println("[Lettre] " + caractere + " — " + zoneOrigine);
     }
 }
 

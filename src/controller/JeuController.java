@@ -1,7 +1,12 @@
 package controller;
 
+import inventaire.Inventaire;
+import items.Item;
+import items.Lettre;
 import jeu.Partie;
 import zones.Zones;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class JeuController {
@@ -84,21 +89,6 @@ public class JeuController {
         return z == null ? "-" : z.getNom();
     }
 
-    public int getTempsRestantZoneSec() {
-        return partie.getTempsRestantZoneSecPublic();
-    }
-
-    public String getTempsFormate() {
-        int sec = getTempsRestantZoneSec();
-        return formatTime(sec);
-    }
-    
-    private String formatTime(int sec) {
-        int minutes = sec / 60;
-        int secondes = sec % 60;
-        return String.format("%02d:%02d", minutes, secondes);
-    }
-
     public String sauvegarder() {
         return partie.sauvegarder();
     }
@@ -109,5 +99,30 @@ public class JeuController {
 
     public String nouvellePartie() {
         return partie.nouvellePartie();
+    }
+
+    public void demarrerNouvellePartie(String nom) {
+        partie.demarrer(nom);
+    }
+
+    public List<String> getInventaireItems() {
+        List<String> noms = new ArrayList<>();
+        for (Item item : partie.getJoueur().getInventaire().getObjets()) {
+            noms.add(item.getNom());
+        }
+        return noms;
+    }
+
+    public boolean isVictoire() {
+        return partie.isVictoire();
+    }
+
+    public String getLettreNomZoneCourante() {
+        Zones z = partie.getZoneCourante();
+        if (z == null) return null;
+        for (Item item : z.getObjetsPresents()) {
+            if (item instanceof Lettre) return item.getNom();
+        }
+        return null;
     }
 }

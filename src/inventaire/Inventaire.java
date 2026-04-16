@@ -9,6 +9,7 @@ public class Inventaire implements Serializable {
     private static final long serialVersionUID = 1L;
     private List<Item> objets;
     private int capaciteMax;
+    private int capaciteActuelle;
 
     public Inventaire() {
         this(10);
@@ -17,19 +18,24 @@ public class Inventaire implements Serializable {
     public Inventaire(int capaciteMax) {
         this.objets = new ArrayList<>();
         this.capaciteMax = capaciteMax;
+        this.capaciteActuelle = 0;
     }
 
     public boolean ajouter(Item item) {
         if (item == null) return false;
         if (objets.size() >= capaciteMax) return false;
-        return objets.add(item);
+        boolean added = objets.add(item);
+        if (added) capaciteActuelle++;
+        return added;
     }
 
     public boolean retirer(Item item) {
-        return objets.remove(item);
+        boolean removed = objets.remove(item);
+        if (removed) capaciteActuelle--;
+        return removed;
     }
 
-    public Item chercher(String nom) {
+    public Item search(String nom) {
         for (Item item : objets) {
             if (item.getNom().equalsIgnoreCase(nom)) {
                 return item;
@@ -47,10 +53,25 @@ public class Inventaire implements Serializable {
     }
 
     public boolean contient(String nom) {
-        return chercher(nom) != null;
+        return search(nom) != null;
     }
 
     public boolean estPlein() {
         return objets.size() >= capaciteMax;
+    }
+
+    public int getCapaciteActuelle() {
+        return capaciteActuelle;
+    }
+
+    public void afficher() {
+        if (objets.isEmpty()) {
+            System.out.println("Inventaire vide.");
+            return;
+        }
+        System.out.println("Inventaire (" + capaciteActuelle + "/" + capaciteMax + ") :");
+        for (Item item : objets) {
+            System.out.println("  - " + item.getNom());
+        }
     }
 }

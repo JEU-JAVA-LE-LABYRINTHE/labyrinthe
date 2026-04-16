@@ -7,8 +7,10 @@ import java.util.List;
 
 public class Zaman extends Zones {
     private final List<Objet> objetsDisponibles;
+    private String motSecret;
+    private String questionFinale;
 
-    public Zaman() {
+    public Zaman(String motSecret, String questionFinale) {
         super(
                 "Zaman",
                 "La zone centrale. Tu y récupères des objets utiles avant de traverser le temps.",
@@ -16,6 +18,8 @@ public class Zaman extends Zones {
                 null
         );
         this.objetsDisponibles = new ArrayList<>();
+        this.motSecret = motSecret.toUpperCase();
+        this.questionFinale = questionFinale;
         objetsDisponibles.add(new Objet("Marteau", "Permet de casser le rocher.", true, "Préhistoire"));
         objetsDisponibles.add(new Objet("Clé ancienne", "Ouvre un coffre verrouillé.", true, "Moyen Âge"));
         objetsDisponibles.add(new Objet("Loupe", "Révèle un symbole caché.", true, "Égypte antique"));
@@ -52,6 +56,32 @@ public class Zaman extends Zones {
             }
         }
         return null;
+    }
+
+    public String afficherObjetsDisponibles() {
+        if (objetsDisponibles.isEmpty()) return "La zone est vide. Tous les objets ont été pris.";
+        StringBuilder sb = new StringBuilder("Objets disponibles dans la zone :\n");
+        for (Objet o : objetsDisponibles) {
+            sb.append("  - ").append(o.getNom()).append(" : ").append(o.getDescription()).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    public void ajouterObjetDisponible(Objet o) {
+        if (o != null) objetsDisponibles.add(o);
+    }
+
+    public boolean verifierMotSecret(String mot) {
+        if (mot == null || motSecret == null || motSecret.isEmpty()) return false;
+        return mot.equalsIgnoreCase(motSecret);
+    }
+
+    public void setMotSecret(String motSecret) {
+        this.motSecret = motSecret;
+    }
+
+    public String getQuestionFinale() {
+        return questionFinale;
     }
 
     private static String normalize(String s) {
