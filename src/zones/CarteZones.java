@@ -51,6 +51,11 @@ public class CarteZones {
         m.definirLettreCollectable(String.valueOf(mot.charAt(2)));
         f.definirLettreCollectable(String.valueOf(mot.charAt(3)));
 
+        // Seule la première zone est accessible au départ
+        e.setBloquee(true);
+        m.setBloquee(true);
+        f.setBloquee(true);
+
         zones.add(p);
         zones.add(e);
         zones.add(m);
@@ -78,8 +83,11 @@ public class CarteZones {
         return null;
     }
 
-    public void debloquerZone(String nom) {
-        // À implémenter selon la logique de progression
+    public void debloquerProchaineZone(Zones zoneTerminee) {
+        int idx = indexDe(zoneTerminee);
+        if (idx >= 0 && idx < zones.size() - 1) {
+            zones.get(idx + 1).setBloquee(false);
+        }
     }
 
     private int indexDe(Zones zone) {
@@ -93,7 +101,11 @@ public class CarteZones {
     public Zones avancerTemps(Zones zoneActuelle) {
         if (zoneActuelle == null) return null;
         if (zoneActuelle == zaman) {
-            return zones.get(0);
+            // Depuis Zaman, aller directement à la première zone accessible
+            for (Zones z : zones) {
+                if (!z.isTerminee() && !z.isBloquee()) return z;
+            }
+            return zaman; // toutes les zones sont terminées
         }
         int idx = indexDe(zoneActuelle);
         if (idx < 0) return null;
@@ -103,11 +115,12 @@ public class CarteZones {
 
     public Zones reculerTemps(Zones zoneActuelle) {
         if (zoneActuelle == null) return null;
-        if (zoneActuelle == zaman) {
-            return zaman;
-        }
+        if (zoneActuelle == zaman) return zaman;
         int idx = indexDe(zoneActuelle);
         if (idx <= 0) return zaman;
-        return zones.get(idx - 1);
+        Zones prev = zones.get(idx - 1);
+        // Si la zone précédente est terminée, retourner à Zaman directement
+        if (prev.isTerminee()) return zaman;
+        return prev;
     }
 }

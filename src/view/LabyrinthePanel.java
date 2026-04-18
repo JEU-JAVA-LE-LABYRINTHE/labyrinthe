@@ -281,6 +281,24 @@ public class LabyrinthePanel extends JPanel {
         g.drawString(message, x, y);
     }
     
+    private void dessinerVictoire(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(new Color(0, 0, 0, 160));
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        String texte = "Enigme résolue, partie gagnée !";
+        g2.setFont(new Font("TimesRoman", Font.BOLD, 32));
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        FontMetrics fm = g2.getFontMetrics();
+        int x = (getWidth() - fm.stringWidth(texte)) / 2;
+        int y = getHeight() / 2;
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(texte, x + 2, y + 2);
+        g2.setColor(new Color(255, 215, 0));
+        g2.drawString(texte, x, y);
+    }
+
     public void changerFond() {
         // Changer dynamiquement l'image de fond
         if (imageFond != null) {

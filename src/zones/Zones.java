@@ -18,6 +18,7 @@ public abstract class Zones implements Serializable {
     private boolean terminee;
     private boolean coffreTrouve;
     private boolean observe;
+    private boolean bloquee;
 
     private Coffre coffre;
     private final Enigme enigme;
@@ -33,6 +34,7 @@ public abstract class Zones implements Serializable {
         this.terminee = false;
         this.coffreTrouve = false;
         this.observe = false;
+        this.bloquee = false;
         this.lettreRecuperee = null;
         this.objetsPresents = new ArrayList<>();
         creerObjet();
@@ -111,6 +113,14 @@ public abstract class Zones implements Serializable {
 
     public void setObserve(boolean observe) {
         this.observe = observe;
+    }
+
+    public boolean isBloquee() {
+        return bloquee;
+    }
+
+    public void setBloquee(boolean bloquee) {
+        this.bloquee = bloquee;
     }
 
     public String getNom() {

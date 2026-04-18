@@ -21,6 +21,7 @@ public class PanneauControle extends JPanel {
     private JButton boutonObserver;
     private JButton boutonLaisser;
     private JButton boutonRecupererLettre;
+    private JButton boutonRepondre;
     private JButton boutonEtat;
     private JButton boutonAide;
 
@@ -44,8 +45,9 @@ public class PanneauControle extends JPanel {
         boutonObserver = new JButton("Observer");
         boutonLaisser          = new JButton("Laisser");
         boutonRecupererLettre  = new JButton("Récupérer lettre");
+        boutonRepondre         = new JButton("Répondre");
         boutonEtat             = new JButton("État");
-        boutonAide     = new JButton("Aide");
+        boutonAide             = new JButton("Aide");
 
         // Ligne de commandes (haut)
         JPanel ligneCommandes = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 4));
@@ -62,6 +64,7 @@ public class PanneauControle extends JPanel {
         ligneCommandes.add(boutonObserver);
         ligneCommandes.add(boutonLaisser);
         ligneCommandes.add(boutonRecupererLettre);
+        ligneCommandes.add(boutonRepondre);
         ligneCommandes.add(new JLabel("|"));
         ligneCommandes.add(boutonEtat);
         ligneCommandes.add(new JLabel("|"));
@@ -142,6 +145,13 @@ public class PanneauControle extends JPanel {
                 afficherDansConsole("Aucune lettre disponible dans cette zone.");
             } else {
                 executerCommande("PRENDRE " + nomLettre);
+            }
+        });
+
+        boutonRepondre.addActionListener(e -> {
+            String reponse = JOptionPane.showInputDialog(frame, "Votre réponse à l'énigme :");
+            if (reponse != null && !reponse.trim().isEmpty()) {
+                executerCommande("R " + reponse.trim());
             }
         });
 

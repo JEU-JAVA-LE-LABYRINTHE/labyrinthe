@@ -70,7 +70,12 @@ public class Partie implements Serializable {
     public String moveOuest() {
         Zones current = joueur.getZoneActuelle();
         Zones next = carteZones.avancerTemps(current);
-        if (next == null || next == current) return "Vous êtes déjà dans la zone la plus lointaine.";
+        if (next == null || next == current) {
+            if (current instanceof Zaman) return "Toutes les zones ont été explorées.";
+            return "Vous êtes déjà dans la zone la plus lointaine accessible.";
+        }
+        if (next.isTerminee()) return "Cette zone est déjà terminée. Vous ne pouvez plus y entrer.";
+        if (next.isBloquee()) return "⚿ Zone verrouillée ! Résolvez d'abord l'énigme de la zone précédente pour progresser.";
         joueur.seDeplacer(next);
         return "[ " + next.getNom().toUpperCase() + " ]\n" + next.afficherDescription();
     }
@@ -79,6 +84,8 @@ public class Partie implements Serializable {
         Zones current = joueur.getZoneActuelle();
         Zones prev = carteZones.reculerTemps(current);
         if (prev == current) return "Vous êtes déjà à Zaman.";
+        if (prev != carteZones.getZaman() && prev.isTerminee())
+            return "Cette zone est déjà terminée. Vous ne pouvez plus y entrer.";
         joueur.seDeplacer(prev);
         return "[ " + prev.getNom().toUpperCase() + " ]\n" + prev.afficherDescription();
     }
@@ -150,11 +157,22 @@ public class Partie implements Serializable {
             Lettre lettre = z.getLettreRecuperee();
             joueur.ajouterLettre(lettre);
             joueur.getInventaire().ajouter(lettre);
-            return "Lettre '" + lettre.obtenirCaractere() + "' collectée.  (" + joueur.getLettres().size() + "/4)";
+            carteZones.debloquerProchaineZone(z);
+            String msg = "✓ Bonne réponse ! Lettre '" + lettre.obtenirCaractere() + "' collectée.  (" + joueur.getLettres().size() + "/4)";
+            if (joueur.getLettres().size() < 4) msg += "\n⚿ La zone suivante est maintenant déverrouillée !";
+            return msg;
         }
+        joueur.perdreUneVie();
         Enigme e = z.getEnigme();
         int restantes = e != null ? e.getTentativesRestantes() : 0;
-        return "Mauvaise réponse. " + restantes + " tentative(s) restante(s).";
+        String msg = "✗ Mauvaise réponse ! Vous perdez une vie. Vies restantes : " + joueur.getNombreVies();
+        if (!joueur.estEnVie()) {
+            jeuEnCours = false;
+            msg += "\n☠ Plus de vies ! GAME OVER.";
+        } else {
+            msg += "\n  " + restantes + " tentative(s) restante(s) sur ce coffre.";
+        }
+        return msg;
     }
 
     public String obtenirIndice() {
