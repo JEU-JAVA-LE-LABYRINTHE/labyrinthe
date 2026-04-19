@@ -12,10 +12,11 @@ import java.util.List;
 public abstract class Zones implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private final String nom;
-    private final String description;
+    protected String nom;
+    protected String description;
+    protected boolean terminee;
+    protected List<Item> objetsPresents;
 
-    private boolean terminee;
     private boolean coffreTrouve;
     private boolean observe;
     private boolean bloquee;
@@ -24,7 +25,6 @@ public abstract class Zones implements Serializable {
     private final Enigme enigme;
 
     private Lettre lettreRecuperee;
-    protected List<Item> objetsPresents;
 
     protected Zones(String nom, String description, Coffre coffre, Enigme enigme) {
         this.nom = nom;
@@ -37,10 +37,10 @@ public abstract class Zones implements Serializable {
         this.bloquee = false;
         this.lettreRecuperee = null;
         this.objetsPresents = new ArrayList<>();
-        creerObjet();
+        CreerObjet();
     }
 
-    protected void creerObjet() {
+    protected void CreerObjet() {
     }
 
     protected void ajouterObjetsAleatoires(String[][] pool, int n) {
@@ -61,7 +61,6 @@ public abstract class Zones implements Serializable {
     public void retirerObjet(Item item) {
         objetsPresents.remove(item);
     }
-
 
     public String afficherDescription() {
         return description;
@@ -123,7 +122,7 @@ public abstract class Zones implements Serializable {
         return nom;
     }
 
-    public Coffre getCoffre() {
+    public Coffre obtenirCoffre() {
         return coffre;
     }
 
@@ -161,4 +160,3 @@ public abstract class Zones implements Serializable {
         return enigme;
     }
 }
-

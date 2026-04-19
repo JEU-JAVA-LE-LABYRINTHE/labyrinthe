@@ -44,6 +44,14 @@ public class Joueur extends Personne {
         lettres.add(lettre);
     }
 
+    public void gererObjets() {
+        inventaire.getObjets().forEach(item -> System.out.println("- " + item.getNom()));
+    }
+
+    public void setZone(Zones z) {
+        seDeplacer(z);
+    }
+
     @Override
     public void afficherInfo() {
         System.out.println(toString());

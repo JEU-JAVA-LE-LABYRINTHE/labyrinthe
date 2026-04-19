@@ -53,6 +53,14 @@ public class Partie implements Serializable {
         joueur.seDeplacer(carteZones.getZoneDepart());
     }
 
+    public void jouer() {
+        demarrer();
+    }
+
+    public boolean verifierVictoire() {
+        return !jeuEnCours;
+    }
+
     public boolean isJeuEnCours() {
         return jeuEnCours && joueur != null && joueur.estEnVie();
     }
@@ -70,7 +78,7 @@ public class Partie implements Serializable {
         if (next.isBloquee()) return "⚿ Zone verrouillée ! Résolvez d'abord l'énigme de la zone précédente pour progresser.";
         joueur.seDeplacer(next);
         String msg = "[ " + next.getNom().toUpperCase() + " ]\n" + next.afficherDescription();
-        Coffre coffre = next.getCoffre();
+        Coffre coffre = next.obtenirCoffre();
         if (coffre != null && coffre.estOuvert() && !next.isTerminee()) {
             Enigme e = next.getEnigme();
             if (e != null) msg += "\n\n[ ÉNIGME EN COURS ]\n" + e.getQuestion();
@@ -91,7 +99,7 @@ public class Partie implements Serializable {
     public String retourZaman() {
         Zaman z = carteZones.getZaman();
         joueur.seDeplacer(z);
-        return "[ ZAMAN ]\n" + z.afficherDescription() + "\n\n" + z.afficherObjetsDisponibles();
+        return "[ ZAMAN ]\n" + z.afficherDescription() + "\n\n" + z.afficherObjetsDisponible();
     }
 
     // ── Exploration ───────────────────────────────────────────────────────────
@@ -102,7 +110,7 @@ public class Partie implements Serializable {
         StringBuilder sb = new StringBuilder("[ " + z.getNom().toUpperCase() + " ]\n");
         sb.append(z.afficherDescription());
         if (z instanceof Zaman) {
-            sb.append("\n\n").append(((Zaman) z).afficherObjetsDisponibles());
+            sb.append("\n\n").append(((Zaman) z).afficherObjetsDisponible());
             if (joueur.getLettres().size() == 4) {
                 sb.append("\n\n★ Vous avez toutes les lettres : ").append(joueur.lettresPourMot());
                 sb.append("\n  → Tapez DEVERROUILLER pour révéler l'énigme finale.");
@@ -129,7 +137,7 @@ public class Partie implements Serializable {
         Zones z = joueur.getZoneActuelle();
         if (z instanceof Zaman) return "Il n'y a pas de coffre-fort à Zaman.";
         if (!z.isCoffreTrouve()) return "Rien à ouvrir ici.";
-        Coffre coffre = z.getCoffre();
+        Coffre coffre = z.obtenirCoffre();
         if (coffre == null || z.isTerminee()) return "Rien à ouvrir ici.";
         if (coffre.estOuvert()) {
             Enigme e = z.getEnigme();
@@ -147,7 +155,7 @@ public class Partie implements Serializable {
     public String repondre(String rep) {
         Zones z = joueur.getZoneActuelle();
         if (z instanceof Zaman) return "Il n'y a pas d'énigme à Zaman.";
-        if (!z.isCoffreTrouve() || z.getCoffre() == null || !z.getCoffre().estOuvert())
+        if (!z.isCoffreTrouve() || z.obtenirCoffre() == null || !z.obtenirCoffre().estOuvert())
             return "Ouvrez d'abord le coffre-fort (commande OUVRIR).";
         if (z.isTerminee()) return "Vous avez déjà résolu cette zone.";
         boolean ok = z.repondre(rep);
@@ -155,7 +163,7 @@ public class Partie implements Serializable {
             Lettre lettre = z.getLettreRecuperee();
             joueur.ajouterLettre(lettre);
             joueur.getInventaire().ajouter(lettre);
-            carteZones.debloquerProchaineZone(z);
+            carteZones.debloquerZone(z);
             String msg = "✓ Bonne réponse ! Lettre '" + lettre.obtenirCaractere() + "' collectée.  (" + joueur.getLettres().size() + "/4)";
             if (joueur.getLettres().size() < 4) msg += "\n⚿ La zone suivante est maintenant déverrouillée !";
             return msg;
@@ -204,7 +212,7 @@ public class Partie implements Serializable {
     public String observer() {
         Zones z = joueur.getZoneActuelle();
         if (z instanceof Zaman) {
-            return ((Zaman) z).afficherObjetsDisponibles();
+            return ((Zaman) z).afficherObjetsDisponible();
         }
         z.setObserve(true);
         List<Item> objets = z.getObjetsPresents();
@@ -326,7 +334,7 @@ public class Partie implements Serializable {
         } else if (!z.isCoffreTrouve()) {
             sb.append("  O  : Zone suivante   |  E  : Reculer   |  Z  : Zaman\n");
             sb.append("  CH : Chercher\n");
-        } else if (z.getCoffre() != null && !z.getCoffre().estOuvert()) {
+        } else if (z.obtenirCoffre() != null && !z.obtenirCoffre().estOuvert()) {
             sb.append("  OUVRIR\n");
             sb.append("  E  : Reculer   |  Z  : Zaman\n");
         } else {

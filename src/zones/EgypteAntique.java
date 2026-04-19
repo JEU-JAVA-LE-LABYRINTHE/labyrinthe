@@ -32,13 +32,13 @@ public class EgypteAntique extends Zones {
         {"Papyrus roulé",          "Un rouleau de papyrus couvert de symboles."}
     };
 
-    private boolean fresqueIntacte;
+    private boolean fresqueIntact;
 
     public EgypteAntique() {
         super("Égypte antique",
               "La salle d'un sarcophage sacré. Des hiéroglyphes couvrent les murs.",
               creerCoffre(), selectionnerEnigme());
-        this.fresqueIntacte = true;
+        this.fresqueIntact = true;
     }
 
     private static Coffre creerCoffre() {
@@ -51,17 +51,17 @@ public class EgypteAntique extends Zones {
     }
 
     @Override
-    protected void creerObjet() {
+    protected void CreerObjet() {
         ajouterObjetsAleatoires(OBJETS_POOL, 5);
     }
 
     @Override
     public String afficherDescription() {
-        return super.afficherDescription() + (fresqueIntacte ? "\nUne fresque ancienne recouvre l'un des murs." : "");
+        return super.afficherDescription() + (fresqueIntact ? "\nUne fresque ancienne recouvre l'un des murs." : "");
     }
 
     public void casserFresque() {
-        fresqueIntacte = false;
+        fresqueIntact = false;
     }
 
     public void revelerSymbole() {
@@ -69,5 +69,5 @@ public class EgypteAntique extends Zones {
         setCoffreTrouve(true);
     }
 
-    public boolean isFresqueIntacte() { return fresqueIntacte; }
+    public boolean isFresqueIntacte() { return fresqueIntact; }
 }

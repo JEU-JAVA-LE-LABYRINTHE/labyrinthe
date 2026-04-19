@@ -56,7 +56,7 @@ public class Inventaire implements Serializable {
         return search(nom) != null;
     }
 
-    public boolean estPlein() {
+    public boolean estPleine() {
         return objets.size() >= capaciteMax;
     }
 

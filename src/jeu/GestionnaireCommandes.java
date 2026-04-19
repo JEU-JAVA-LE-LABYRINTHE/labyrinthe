@@ -2,9 +2,42 @@ package jeu;
 
 import personnes.Joueur;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GestionnaireCommandes implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    private List<Commandes> commandes;
+
+    public GestionnaireCommandes() {
+        this.commandes = new ArrayList<>();
+    }
+
+    public void enregistrer(Commandes commande) {
+        commandes.add(commande);
+    }
+
+    public void executer(String input, Partie partie, Joueur joueur) {
+        traiterCommandes(input, partie, joueur);
+    }
+
+    public Commandes obtenirCommande(String motCommande) {
+        if (motCommande == null) return null;
+        for (Commandes c : commandes) {
+            if (c.getMotCommande().equalsIgnoreCase(motCommande)) return c;
+        }
+        return null;
+    }
+
+    public String afficherAide() {
+        StringBuilder sb = new StringBuilder("Commandes disponibles :\n");
+        for (Commandes c : commandes) {
+            sb.append("  ").append(c.getMotCommande())
+              .append(" — ").append(c.getDescription()).append("\n");
+        }
+        return sb.toString();
+    }
 
     public String traiterCommandes(String input, Partie partie, Joueur joueur) {
         if (input == null || input.isEmpty()) {

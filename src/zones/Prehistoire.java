@@ -52,7 +52,7 @@ public class Prehistoire extends Zones {
     }
 
     @Override
-    protected void creerObjet() {
+    protected void CreerObjet() {
         ajouterObjet(new Objet("fossile cassé", "Un fossile d'animal préhistorique, brisé en deux.", true, null));
         ajouterObjetsAleatoires(OBJETS_POOL, 5);
     }

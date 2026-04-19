@@ -7,6 +7,14 @@ public class GestionnaireSauvegarde implements Serializable {
     private static final String NOM_FICHIER = "partie.ser";
     private static final String NOM_DOSSIER = "sauvegarde";
 
+    private String cheminSauvegarde;
+    private String extentionFichier;
+
+    public GestionnaireSauvegarde() {
+        this.cheminSauvegarde = obtenirDossierSauvegarde().getAbsolutePath();
+        this.extentionFichier = ".ser";
+    }
+
     public Partie sauvegarder(Partie partie) {
         File dossier = obtenirDossierSauvegarde();
         if (!dossier.exists()) dossier.mkdirs();

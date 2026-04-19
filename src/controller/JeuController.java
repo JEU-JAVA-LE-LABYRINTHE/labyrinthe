@@ -112,6 +112,6 @@ public class JeuController {
         if (!partie.isJeuEnCours()) return false;
         Zones z = partie.getZoneCourante();
         if (z == null) return false;
-        return z.getCoffre() != null && z.getCoffre().estOuvert() && !z.isTerminee();
+        return z.obtenirCoffre() != null && z.obtenirCoffre().estOuvert() && !z.isTerminee();
     }
 }

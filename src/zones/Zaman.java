@@ -53,7 +53,7 @@ public class Zaman extends Zones {
         return null;
     }
 
-    public String afficherObjetsDisponibles() {
+    public String afficherObjetsDisponible() {
         if (objetsDisponibles.isEmpty()) return "La zone est vide. Tous les objets ont été pris.";
         StringBuilder sb = new StringBuilder("Objets disponibles dans la zone :\n");
         for (Objet o : objetsDisponibles) {

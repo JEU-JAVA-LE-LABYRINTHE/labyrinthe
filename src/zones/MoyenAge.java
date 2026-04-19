@@ -51,7 +51,7 @@ public class MoyenAge extends Zones {
     }
 
     @Override
-    protected void creerObjet() {
+    protected void CreerObjet() {
         ajouterObjetsAleatoires(OBJETS_POOL, 5);
     }
 

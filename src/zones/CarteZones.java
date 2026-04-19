@@ -24,23 +24,25 @@ public class CarteZones {
     };
 
     private final Zaman zaman;
-    private final List<Zones> zones;
+    private List<Zones> zones;
     private final Zones zoneDepart;
     private final int nombreZones;
+    private final String mot;
 
     public CarteZones() {
         int idx = (int) (Math.random() * MOTS_ENIGMES.length);
-        String mot      = MOTS_ENIGMES[idx][0];
+        this.mot      = MOTS_ENIGMES[idx][0];
         String question = MOTS_ENIGMES[idx][1];
 
         this.zaman = new Zaman(mot, question);
         this.zones = new ArrayList<>();
-        creerZones(mot);
+        creerZones();
         this.zoneDepart = zaman;
         this.nombreZones = zones.size() + 1;
     }
 
-    private void creerZones(String mot) {
+    public void creerZones() {
+        zones = new ArrayList<>();
         Prehistoire p = new Prehistoire();
         EgypteAntique e = new EgypteAntique();
         MoyenAge m = new MoyenAge();
@@ -51,7 +53,6 @@ public class CarteZones {
         m.definirLettreCollectable(String.valueOf(mot.charAt(2)));
         f.definirLettreCollectable(String.valueOf(mot.charAt(3)));
 
-        // Seule la première zone est accessible au départ
         e.setBloquee(true);
         m.setBloquee(true);
         f.setBloquee(true);
@@ -60,6 +61,22 @@ public class CarteZones {
         zones.add(e);
         zones.add(m);
         zones.add(f);
+    }
+
+    public Zones obtenirZone(String nom) {
+        if (nom == null) return null;
+        if (zaman.getNom().equalsIgnoreCase(nom.trim())) return zaman;
+        for (Zones z : zones) {
+            if (z.getNom().equalsIgnoreCase(nom.trim())) return z;
+        }
+        return null;
+    }
+
+    public void debloquerZone(Zones zoneTerminee) {
+        int idx = indexDe(zoneTerminee);
+        if (idx >= 0 && idx < zones.size() - 1) {
+            zones.get(idx + 1).setBloquee(false);
+        }
     }
 
     public Zaman getZaman() {
@@ -74,22 +91,6 @@ public class CarteZones {
         return nombreZones;
     }
 
-    public Zones obtenirZone(String nom) {
-        if (nom == null) return null;
-        if (zaman.getNom().equalsIgnoreCase(nom.trim())) return zaman;
-        for (Zones z : zones) {
-            if (z.getNom().equalsIgnoreCase(nom.trim())) return z;
-        }
-        return null;
-    }
-
-    public void debloquerProchaineZone(Zones zoneTerminee) {
-        int idx = indexDe(zoneTerminee);
-        if (idx >= 0 && idx < zones.size() - 1) {
-            zones.get(idx + 1).setBloquee(false);
-        }
-    }
-
     private int indexDe(Zones zone) {
         if (zone == null) return -1;
         for (int i = 0; i < zones.size(); i++) {
@@ -101,11 +102,10 @@ public class CarteZones {
     public Zones avancerTemps(Zones zoneActuelle) {
         if (zoneActuelle == null) return null;
         if (zoneActuelle == zaman) {
-            // Depuis Zaman, aller directement à la première zone accessible
             for (Zones z : zones) {
                 if (!z.isTerminee() && !z.isBloquee()) return z;
             }
-            return zaman; // toutes les zones sont terminées
+            return zaman;
         }
         int idx = indexDe(zoneActuelle);
         if (idx < 0) return null;
@@ -119,7 +119,6 @@ public class CarteZones {
         int idx = indexDe(zoneActuelle);
         if (idx <= 0) return zaman;
         Zones prev = zones.get(idx - 1);
-        // Si la zone précédente est terminée, retourner à Zaman directement
         if (prev.isTerminee()) return zaman;
         return prev;
     }

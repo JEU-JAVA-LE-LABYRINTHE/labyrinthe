@@ -36,6 +36,12 @@ public class Enigme implements Serializable {
         return false;
     }
 
+    public boolean resoudre() {
+        if (resolue) return true;
+        resolue = true;
+        return true;
+    }
+
     public boolean estResolue() {
         return resolue;
     }

@@ -13,10 +13,10 @@ public class Launcher {
         } catch (Exception e) {
             System.err.println("Impossible de définir le look and feel: " + e.getMessage());
         }
-        lancerJeu();
+        LancerJeu();
     }
 
-    public static void lancerJeu() {
+    public static void LancerJeu() {
         CommandeHelper.afficherAide();
         System.out.println();
 

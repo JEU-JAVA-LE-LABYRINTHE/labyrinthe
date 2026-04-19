@@ -52,7 +52,7 @@ public class Futur extends Zones {
     }
 
     @Override
-    protected void creerObjet() {
+    protected void CreerObjet() {
         ajouterObjetsAleatoires(OBJETS_POOL, 5);
     }
 
@@ -68,5 +68,5 @@ public class Futur extends Zones {
 
     public boolean isTerminalActive() { return terminalActive; }
 
-    public String obtenirMotPasse() { return motDePasse; }
+    public String obtenirMotPas() { return motDePasse; }
 }
