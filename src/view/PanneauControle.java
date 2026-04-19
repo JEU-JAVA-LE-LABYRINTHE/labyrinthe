@@ -148,12 +148,7 @@ public class PanneauControle extends JPanel {
             }
         });
 
-        boutonRepondre.addActionListener(e -> {
-            String reponse = JOptionPane.showInputDialog(frame, "Votre réponse à l'énigme :");
-            if (reponse != null && !reponse.trim().isEmpty()) {
-                executerCommande("R " + reponse.trim());
-            }
-        });
+        boutonRepondre.addActionListener(e -> demanderReponseEnigme());
 
         boutonEtat.addActionListener(e -> executerCommande("STATUS"));
 
@@ -176,6 +171,17 @@ public class PanneauControle extends JPanel {
         }
         zoneSaisie.setText("");
         frame.getLabyrinthePanel().repaint();
+
+        if (jeuController.isEnigmeActive()) {
+            demanderReponseEnigme();
+        }
+    }
+
+    private void demanderReponseEnigme() {
+        String reponse = JOptionPane.showInputDialog(frame, "Votre réponse à l'énigme :");
+        if (reponse != null && !reponse.trim().isEmpty()) {
+            executerCommande("R " + reponse.trim());
+        }
     }
 
     public void afficherDansConsole(String msg) {

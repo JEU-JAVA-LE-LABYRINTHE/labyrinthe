@@ -117,11 +117,13 @@ public class JeuController {
     }
 
     public String getLettreNomZoneCourante() {
-        Zones z = partie.getZoneCourante();
-        if (z == null) return null;
-        for (Item item : z.getObjetsPresents()) {
-            if (item instanceof Lettre) return item.getNom();
-        }
         return null;
+    }
+
+    public boolean isEnigmeActive() {
+        if (!partie.isJeuEnCours()) return false;
+        Zones z = partie.getZoneCourante();
+        if (z == null) return false;
+        return z.getCoffre() != null && z.getCoffre().estOuvert() && !z.isTerminee();
     }
 }
