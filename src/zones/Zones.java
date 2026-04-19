@@ -144,9 +144,8 @@ public abstract class Zones implements Serializable {
     }
 
     public void definirLettreCollectable(String caractere) {
-        if (coffre != null) {
-            coffre.setLettre(new Lettre(caractere, nom));
-        }
+        objetsPresents.removeIf(item -> item instanceof Lettre);
+        objetsPresents.add(0, new Lettre(caractere, nom));
     }
 
     public Item prendreItemPresent(String nom) {

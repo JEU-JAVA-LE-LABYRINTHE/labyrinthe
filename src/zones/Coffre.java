@@ -43,10 +43,6 @@ public class Coffre implements Serializable {
         return lettre;
     }
 
-    public void setLettre(Lettre lettre) {
-        this.lettre = lettre;
-    }
-
     public Item getCleRequise() {
         return cleRequise;
     }
