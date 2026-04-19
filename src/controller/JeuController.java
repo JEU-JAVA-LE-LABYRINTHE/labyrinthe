@@ -2,6 +2,8 @@ package controller;
 
 import items.Item;
 import items.Lettre;
+import jeu.GestionnaireCommandes;
+import jeu.GestionnaireSauvegarde;
 import jeu.Partie;
 import zones.Zones;
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class JeuController {
-    private final Partie partie;
+    private Partie partie;
     
     private static final Map<String, String> DIRECTION_MAP = Map.ofEntries(
         Map.entry("ouest", "moveOuest"),
@@ -92,8 +94,20 @@ public class JeuController {
         return partie.sauvegarder();
     }
 
+    public String sauvegarder() {
+        return partie.sauvegarder();
+    }
+
     public String charger() {
-        return partie.charger();
+        GestionnaireSauvegarde gs = new GestionnaireSauvegarde();
+        Partie loaded = gs.charger();
+        if (loaded == null) return "Aucune sauvegarde trouvée.";
+        this.partie = loaded;
+        this.partie.gestionnaireCmd = new GestionnaireCommandes();
+        this.partie.gestionnaireSauvegarde = gs;
+        return "Partie chargée — " + loaded.getJoueur().getNom()
+             + " | Vies : " + loaded.getJoueur().getNombreVies()
+             + " | Lettres : " + loaded.getJoueur().getLettres().size() + "/4";
     }
 
     public String nouvellePartie() {

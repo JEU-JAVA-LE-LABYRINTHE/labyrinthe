@@ -23,7 +23,7 @@ public class PanneauControle extends JPanel {
     private JButton boutonRecupererLettre;
     private JButton boutonRepondre;
     private JButton boutonEtat;
-    private JButton boutonAide;
+    private JButton boutonSauvegarder;
     private JButton boutonNouvellePartie;
 
     private JTextArea console;
@@ -48,7 +48,7 @@ public class PanneauControle extends JPanel {
         boutonRecupererLettre  = new JButton("Récupérer lettre");
         boutonRepondre         = new JButton("Répondre");
         boutonEtat             = new JButton("État");
-        boutonAide             = new JButton("Aide");
+        boutonSauvegarder      = new JButton("Sauvegarder");
         boutonNouvellePartie   = new JButton("Nouvelle partie");
         boutonNouvellePartie.setBackground(new Color(180, 60, 60));
         boutonNouvellePartie.setForeground(Color.WHITE);
@@ -73,7 +73,7 @@ public class PanneauControle extends JPanel {
         ligneCommandes.add(new JLabel("|"));
         ligneCommandes.add(boutonEtat);
         ligneCommandes.add(new JLabel("|"));
-        ligneCommandes.add(boutonAide);
+        ligneCommandes.add(boutonSauvegarder);
         ligneCommandes.add(new JLabel("|"));
         ligneCommandes.add(boutonNouvellePartie);
 
@@ -159,9 +159,10 @@ public class PanneauControle extends JPanel {
 
         boutonEtat.addActionListener(e -> executerCommande("STATUS"));
 
-        boutonAide.addActionListener(e -> {
-            AideDialog dialog = new AideDialog(frame);
-            dialog.setVisible(true);
+        boutonSauvegarder.addActionListener(e -> {
+            if (!validerController()) return;
+            String msg = jeuController.sauvegarder();
+            afficherDansConsole(msg);
         });
 
         boutonNouvellePartie.addActionListener(e -> {

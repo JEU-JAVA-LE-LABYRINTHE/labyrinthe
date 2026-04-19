@@ -4,56 +4,60 @@ import java.io.*;
 
 public class GestionnaireSauvegarde implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String cheminSauvegarde;
-    private String extensionFichier;
-
-    public GestionnaireSauvegarde() {
-        this("sauvegardes/partie", ".ser");
-    }
-
-    public GestionnaireSauvegarde(String cheminSauvegarde, String extensionFichier) {
-        this.cheminSauvegarde = cheminSauvegarde;
-        this.extensionFichier = extensionFichier;
-    }
+    private static final String NOM_FICHIER = "partie.ser";
+    private static final String NOM_DOSSIER = "sauvegarde";
 
     public Partie sauvegarder(Partie partie) {
-        String chemin = cheminSauvegarde + extensionFichier;
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(chemin))) {
+        File dossier = obtenirDossierSauvegarde();
+        if (!dossier.exists()) dossier.mkdirs();
+        File fichier = new File(dossier, NOM_FICHIER);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fichier))) {
             oos.writeObject(partie);
-            System.out.println("Partie sauvegardée dans : " + chemin);
             return partie;
         } catch (IOException e) {
-            System.out.println("Erreur lors de la sauvegarde : " + e.getMessage());
+            System.err.println("Erreur sauvegarde : " + e.getMessage());
             return null;
         }
     }
 
     public Partie charger() {
-        String chemin = cheminSauvegarde + extensionFichier;
-        if (!existSauvegarde()) {
-            System.out.println("Aucune sauvegarde trouvée.");
-            return null;
-        }
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(chemin))) {
-            Partie partie = (Partie) ois.readObject();
-            System.out.println("Partie chargée depuis : " + chemin);
-            return partie;
+        File fichier = new File(obtenirDossierSauvegarde(), NOM_FICHIER);
+        if (!fichier.exists()) return null;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichier))) {
+            return (Partie) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Erreur lors du chargement : " + e.getMessage());
+            System.err.println("Erreur chargement : " + e.getMessage());
             return null;
         }
     }
 
     public boolean existSauvegarde() {
-        File fichier = new File(cheminSauvegarde + extensionFichier);
-        return fichier.exists() && fichier.isFile();
+        return new File(obtenirDossierSauvegarde(), NOM_FICHIER).exists();
     }
 
-    public String getCheminSauvegarde() {
-        return cheminSauvegarde;
+    public String getCheminComplet() {
+        return new File(obtenirDossierSauvegarde(), NOM_FICHIER).getAbsolutePath();
     }
 
-    public String getExtensionFichier() {
-        return extensionFichier;
+    private static File obtenirDossierSauvegarde() {
+        try {
+            File location = new File(
+                GestionnaireSauvegarde.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toURI());
+            File base;
+            if (location.isFile()) {
+                // Exécution depuis un JAR → dossier du JAR
+                base = location.getParentFile();
+            } else {
+                // Exécution depuis l'IDE → remonter depuis out/production/labyrinthe
+                base = location;
+                for (int i = 0; i < 3; i++) {
+                    if (base.getParentFile() != null) base = base.getParentFile();
+                }
+            }
+            return new File(base, NOM_DOSSIER);
+        } catch (Exception e) {
+            return new File(System.getProperty("user.dir"), NOM_DOSSIER);
+        }
     }
 }
