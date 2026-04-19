@@ -366,7 +366,6 @@ public class Partie implements Serializable {
             sb.append("Sauvegardée le : ").append(sdf.format(new java.util.Date(dateHeureSauvegarde))).append("\n");
         sb.append("Joueur   : ").append(joueur.getNom()).append("\n");
         sb.append("Vies     : ").append(joueur.getNombreVies()).append("\n");
-        sb.append("Score    : ").append(joueur.getScore()).append("\n");
         sb.append("Zone     : ").append(joueur.getZoneActuelle() != null ? joueur.getZoneActuelle().getNom() : "-").append("\n");
         sb.append("Lettres  : ");
         if (joueur.getLettres().isEmpty()) {

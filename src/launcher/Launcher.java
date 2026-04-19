@@ -20,7 +20,6 @@ public class Launcher {
             LabyrintheFrame frame = new LabyrintheFrame();
             JeuController jeuController = new JeuController();
             frame.setJeuController(jeuController);
-            jeuController.demarrerJeu();
             frame.setVisible(true);
         });
     }
