@@ -13,7 +13,7 @@ public class EgypteAntique extends Zones {
         new Enigme("Quel titre portait le souverain divin de l'Égypte antique ?",
                    "PHARAON", "Il était considéré comme un dieu vivant sur Terre."),
         new Enigme("Quel fleuve était considéré comme sacré en Égypte antique ?",
-                   "NILE", "Il apporte la vie au désert grâce à ses crues annuelles."),
+                   "NIL", "Il apporte la vie au désert grâce à ses crues annuelles."),
         new Enigme("Quelle écriture hiéroglyphique utilisait des symboles pour représenter les mots ?",
                    "HIEROGLYPHES", "Ces symboles ornent les murs des temples et des pyramides."),
         new Enigme("Quel animal sacré était vénéré dans l'Égypte antique et représenté avec une tête de faucon ?",
