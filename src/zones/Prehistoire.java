@@ -2,16 +2,26 @@ package zones;
 
 import items.Lettre;
 import items.Objet;
+import java.util.Arrays;
+import java.util.List;
 
 public class Prehistoire extends Zones {
     private static final long serialVersionUID = 1L;
 
-    private static final String[][] ENIGMES = {
-        {"Quelle découverte a permis aux hommes préhistoriques de se réchauffer et de cuisiner ?",
-         "FEU", "Chaud et lumineux, il illuminait les cavernes la nuit."},
-        {"Quel immense animal velu à longues défenses vivait à l'ère glaciaire ?",
-         "MAMMOUTH", "Il ressemblait à un éléphant, mais couvert de fourrure épaisse."}
-    };
+    private static final List<Enigme> ENIGMES = Arrays.asList(
+        new Enigme("Quelle découverte a permis aux hommes préhistoriques de se réchauffer et de cuisiner ?",
+                   "FEU", "Chaud et lumineux, il illuminait les cavernes la nuit."),
+        new Enigme("Quel immense animal velu à longues défenses vivait à l'ère glaciaire ?",
+                   "MAMMOUTH", "Il ressemblait à un éléphant, mais couvert de fourrure épaisse."),
+        new Enigme("Quel outil de pierre taillée permettait de couper et de gratter ?",
+                   "SILEX", "Ces outils étaient essentiels pour la chasse et la préparation des aliments."),
+        new Enigme("Quelle période de l'histoire humaine précède l'invention de l'écriture ?",
+                   "PREHISTOIRE", "Elle couvre des millions d'années, depuis les premiers hominidés."),
+        new Enigme("Quel animal prédateur chassait en meute et était redouté des premiers hommes ?",
+                   "LOUP", "Il hurlait à la lune et vivait en groupe."),
+        new Enigme("Quelle technique consistait à peindre sur les murs des cavernes ?",
+                   "PEINTURE RUPESTRE", "Ces œuvres d'art racontent la vie des chasseurs-cueilleurs.")
+    );
 
     private static final String[][] OBJETS_POOL = {
         {"Rocher immobile",   "Un gros rocher qui obstrue le chemin."},
@@ -37,8 +47,8 @@ public class Prehistoire extends Zones {
     }
 
     private static Enigme selectionnerEnigme() {
-        int idx = (int) (Math.random() * ENIGMES.length);
-        return new Enigme(ENIGMES[idx][0], ENIGMES[idx][1], ENIGMES[idx][2]);
+        int idx = (int) (Math.random() * ENIGMES.size());
+        return ENIGMES.get(idx);
     }
 
     @Override

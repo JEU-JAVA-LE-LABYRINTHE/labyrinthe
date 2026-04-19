@@ -1,16 +1,26 @@
 package zones;
 
 import items.Lettre;
+import java.util.Arrays;
+import java.util.List;
 
 public class MoyenAge extends Zones {
     private static final long serialVersionUID = 1L;
 
-    private static final String[][] ENIGMES = {
-        {"Quelle longue arme blanche symbolisait l'honneur des chevaliers du Moyen Âge ?",
-         "EPEE", "Elle est forgée dans le métal. Le chevalier ne s'en séparait jamais."},
-        {"Comment appelle-t-on la demeure fortifiée d'un seigneur médiéval entourée de remparts ?",
-         "CHATEAU", "Les rois y résidaient, protégés par de hautes murailles et des douves."}
-    };
+    private static final List<Enigme> ENIGMES = Arrays.asList(
+        new Enigme("Quelle longue arme blanche symbolisait l'honneur des chevaliers du Moyen Âge ?",
+                   "EPEE", "Elle est forgée dans le métal. Le chevalier ne s'en séparait jamais."),
+        new Enigme("Comment appelle-t-on la demeure fortifiée d'un seigneur médiéval entourée de remparts ?",
+                   "CHATEAU", "Les rois y résidaient, protégés par de hautes murailles et des douves."),
+        new Enigme("Quel vêtement de protection portaient les chevaliers lors des tournois ?",
+                   "ARMURE", "Elle était faite de plaques de métal assemblées."),
+        new Enigme("Quelle période historique succède à l'Antiquité et précède la Renaissance ?",
+                   "MOYEN AGE", "Elle dura environ 1000 ans, de la chute de Rome à la découverte de l'Amérique."),
+        new Enigme("Quel titre portait le chef militaire d'une armée médiévale ?",
+                   "CHEVALIER", "Il combattait à cheval et défendait les valeurs de la chevalerie."),
+        new Enigme("Quelle arme de jet était utilisée pour attaquer les châteaux forts ?",
+                   "CATAPULTE", "Elle lançait des projectiles pour briser les murailles.")
+    );
 
     private static final String[][] OBJETS_POOL = {
         {"Bouclier rouillé",      "Un vieux bouclier couvert de rouille."},
@@ -36,8 +46,8 @@ public class MoyenAge extends Zones {
     }
 
     private static Enigme selectionnerEnigme() {
-        int idx = (int) (Math.random() * ENIGMES.length);
-        return new Enigme(ENIGMES[idx][0], ENIGMES[idx][1], ENIGMES[idx][2]);
+        int idx = (int) (Math.random() * ENIGMES.size());
+        return ENIGMES.get(idx);
     }
 
     @Override

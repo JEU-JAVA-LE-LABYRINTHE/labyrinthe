@@ -1,6 +1,5 @@
 package controller;
 
-import inventaire.Inventaire;
 import items.Item;
 import items.Lettre;
 import jeu.Partie;

@@ -3,9 +3,7 @@ package personnes;
 import inventaire.Inventaire;
 import items.Lettre;
 import zones.Zones;
-import personnes.Personne;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,16 +1,26 @@
 package zones;
 
 import items.Lettre;
+import java.util.Arrays;
+import java.util.List;
 
 public class Futur extends Zones {
     private static final long serialVersionUID = 1L;
 
-    private static final String[][] ENIGMES = {
-        {"Quel faisceau de lumière concentrée est utilisé dans les technologies du futur ?",
-         "LASER", "Il voyage à la vitesse de la lumière et peut tout couper."},
-        {"Quel terme désigne des machines intelligentes capables d'effectuer des tâches humaines ?",
-         "ROBOT", "Ils travaillent sans se fatiguer et exécutent les ordres à la perfection."}
-    };
+    private static final List<Enigme> ENIGMES = Arrays.asList(
+        new Enigme("Quel faisceau de lumière concentrée est utilisé dans les technologies du futur ?",
+                   "LASER", "Il voyage à la vitesse de la lumière et peut tout couper."),
+        new Enigme("Quel terme désigne des machines intelligentes capables d'effectuer des tâches humaines ?",
+                   "ROBOT", "Ils travaillent sans se fatiguer et exécutent les ordres à la perfection."),
+        new Enigme("Quelle technologie permet de voyager instantanément d'un point à un autre ?",
+                   "TELEPORTATION", "Elle défie les lois de la physique actuelle."),
+        new Enigme("Quel matériau révolutionnaire est plus léger que l'air et plus résistant que l'acier ?",
+                   "GRAPHENE", "Il est composé d'une seule couche d'atomes de carbone."),
+        new Enigme("Quelle source d'énergie propre utilise la fusion des atomes ?",
+                   "ENERGIE NUCLEAIRE", "Elle reproduit le processus énergétique du Soleil."),
+        new Enigme("Quel dispositif permet de communiquer avec n'importe qui sur Terre instantanément ?",
+                   "INTERNET QUANTIQUE", "Il utilise les propriétés quantiques pour une transmission ultra-rapide.")
+    );
 
     private static final String[][] OBJETS_POOL = {
         {"Écran brisé",        "Un écran holographique fissuré qui scintille."},
@@ -37,8 +47,8 @@ public class Futur extends Zones {
     }
 
     private static Enigme selectionnerEnigme() {
-        int idx = (int) (Math.random() * ENIGMES.length);
-        return new Enigme(ENIGMES[idx][0], ENIGMES[idx][1], ENIGMES[idx][2]);
+        int idx = (int) (Math.random() * ENIGMES.size());
+        return ENIGMES.get(idx);
     }
 
     @Override
