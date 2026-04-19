@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 package zones;
 
 import items.Item;
@@ -26,8 +24,6 @@ public abstract class Zones implements Serializable {
     private final Enigme enigme;
 
     private Lettre lettreRecuperee;
-    private Lettre lettreCollectable;
-    private boolean lettreDisponible;
     protected List<Item> objetsPresents;
 
     protected Zones(String nom, String description, Coffre coffre, Enigme enigme) {
@@ -40,8 +36,6 @@ public abstract class Zones implements Serializable {
         this.observe = false;
         this.bloquee = false;
         this.lettreRecuperee = null;
-        this.lettreCollectable = null;
-        this.lettreDisponible = false;
         this.objetsPresents = new ArrayList<>();
         creerObjet();
     }
@@ -93,12 +87,10 @@ public abstract class Zones implements Serializable {
         if (terminee) return false;
         if (coffre == null || enigme == null) return false;
         if (!coffre.estOuvert()) return false;
-        if (enigme.estResolue()) return false;
         boolean ok = enigme.tenter(rep);
         if (ok) {
-            lettreRecuperee = (lettreCollectable != null) ? lettreCollectable : coffre.recupererLettre();
-            lettreDisponible = true;
-            // terminee est mis à true seulement quand la lettre est collectée
+            lettreRecuperee = coffre.recupererLettre();
+            terminee = true;
         }
         return ok;
     }
@@ -152,8 +144,8 @@ public abstract class Zones implements Serializable {
     }
 
     public void definirLettreCollectable(String caractere) {
-        // Stockée séparément pour ne pas apparaître dans la liste des objets de la zone
-        this.lettreCollectable = new Lettre(caractere, nom);
+        objetsPresents.removeIf(item -> item instanceof Lettre);
+        objetsPresents.add(0, new Lettre(caractere, nom));
     }
 
     public Item prendreItemPresent(String nom) {
@@ -171,12 +163,5 @@ public abstract class Zones implements Serializable {
     public Enigme getEnigme() {
         return enigme;
     }
-
-    public boolean isLettreDisponible() { return lettreDisponible; }
-
-    public Lettre getLettreCollectable() { return lettreCollectable; }
-
-    public void setTerminee(boolean b) { this.terminee = b; }
 }
 
->>>>>>> Stashed changes

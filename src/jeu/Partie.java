@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 package jeu;
 
 import inventaire.Inventaire;
@@ -79,26 +77,7 @@ public class Partie implements Serializable {
         if (next.isTerminee()) return "Cette zone est déjà terminée. Vous ne pouvez plus y entrer.";
         if (next.isBloquee()) return "⚿ Zone verrouillée ! Résolvez d'abord l'énigme de la zone précédente pour progresser.";
         joueur.seDeplacer(next);
-        StringBuilder sb = new StringBuilder("[ " + next.getNom().toUpperCase() + " ]\n");
-        sb.append(next.afficherDescription());
-        Enigme enigme = next.getEnigme();
-        if (enigme != null) {
-            Coffre coffre = next.getCoffre();
-            if (coffre != null && !coffre.estOuvert()) {
-                next.chercherCoffre();
-                coffre.ouvrir();
-            }
-            sb.append("\n\n══════════════════════════════════\n");
-            if (enigme.estResolue()) {
-                sb.append("✓ Énigme déjà résolue !\nVous pouvez récupérer votre lettre.");
-                sb.append("\n→ Cliquez sur 'Récupérer lettre' ou tapez PRENDRE lettre.");
-            } else {
-                sb.append("ÉNIGME :\n").append(enigme.getQuestion());
-                sb.append("\n→ Utilisez R <réponse> pour répondre.");
-            }
-            sb.append("\n══════════════════════════════════");
-        }
-        return sb.toString();
+        return "[ " + next.getNom().toUpperCase() + " ]\n" + next.afficherDescription();
     }
 
     public String moveEst() {
@@ -173,16 +152,14 @@ public class Partie implements Serializable {
         if (!z.isCoffreTrouve() || z.getCoffre() == null || !z.getCoffre().estOuvert())
             return "Ouvrez d'abord le coffre-fort (commande OUVRIR).";
         if (z.isTerminee()) return "Vous avez déjà résolu cette zone.";
-        if (z.getEnigme() != null && z.getEnigme().estResolue())
-            return "Énigme déjà résolue ! Récupérez maintenant votre lettre.\n→ Cliquez sur 'Récupérer lettre' ou tapez PRENDRE lettre.";
         boolean ok = z.repondre(rep);
         if (ok) {
-            carteZones.debloquerProchaineZone(z);
             Lettre lettre = z.getLettreRecuperee();
-            String msg = "✓ Bonne réponse !\nVous pouvez maintenant récupérer la lettre";
-            if (lettre != null) msg += " '" + lettre.obtenirCaractere() + "'";
-            msg += ".\n→ Cliquez sur 'Récupérer lettre' ou tapez PRENDRE lettre.";
-            msg += "\n⚿ La zone suivante est maintenant déverrouillée !";
+            joueur.ajouterLettre(lettre);
+            joueur.getInventaire().ajouter(lettre);
+            carteZones.debloquerProchaineZone(z);
+            String msg = "✓ Bonne réponse ! Lettre '" + lettre.obtenirCaractere() + "' collectée.  (" + joueur.getLettres().size() + "/4)";
+            if (joueur.getLettres().size() < 4) msg += "\n⚿ La zone suivante est maintenant déverrouillée !";
             return msg;
         }
         joueur.perdreUneVie();
@@ -261,25 +238,21 @@ public class Partie implements Serializable {
             return "Vous prenez : " + pris.getNom() + "  (" + (nbObjets + 1) + "/2 objets)";
         }
 
-        // Zones non-Zaman : collecte de la lettre uniquement si l'énigme est résolue
-        String nomLower = nomObjet.trim().toLowerCase();
-        boolean demandantLettre = nomLower.contains("lettre");
-
-        if (demandantLettre || (z.getLettreRecuperee() != null &&
-                z.getLettreRecuperee().getNom().toLowerCase().contains(nomLower))) {
-            if (!z.isLettreDisponible()) {
-                return "Résolvez d'abord l'énigme pour récupérer la lettre.";
-            }
-            Lettre lc = z.getLettreRecuperee();
-            if (lc == null) return "Aucune lettre à récupérer ici.";
+        // Zones non-Zaman : on peut prendre les lettres présentes
+        Item item = z.prendreItemPresent(nomObjet);
+        if (item == null) return "Objet introuvable : '" + nomObjet + "'.";
+        if (item instanceof Lettre) {
             boolean dejaCollectee = joueur.getLettres().stream()
-                .anyMatch(l -> l.obtenirZoneOrigine().equals(lc.obtenirZoneOrigine()));
-            if (dejaCollectee) return "Vous avez déjà la lettre de cette zone.";
-            joueur.ajouterLettre(lc);
-            joueur.getInventaire().ajouter(lc);
-            z.setTerminee(true);
+                .anyMatch(l -> l.obtenirZoneOrigine().equals(((Lettre) item).obtenirZoneOrigine()));
+            if (dejaCollectee) {
+                z.ajouterObjet(item); // on remet l'item dans la zone
+                return "Vous avez déjà la lettre de cette zone.";
+            }
+            joueur.ajouterLettre((Lettre) item);
+            joueur.getInventaire().ajouter(item);
+            z.setCoffreTrouve(true);
             int total = joueur.getLettres().size();
-            String msg = "Lettre '" + lc.obtenirCaractere() + "' collectée !  (" + total + "/4)";
+            String msg = "Lettre '" + ((Lettre) item).obtenirCaractere() + "' collectée !  (" + total + "/4)";
             if (total == 4) {
                 msg += "\n★ Toutes les lettres collectées : " + joueur.lettresPourMot()
                     + "\n  → Retournez à Zaman (Z) et tapez DEVERROUILLER pour l'énigme finale !";
@@ -288,9 +261,6 @@ public class Partie implements Serializable {
             }
             return msg;
         }
-
-        Item item = z.prendreItemPresent(nomObjet);
-        if (item == null) return "Objet introuvable : '" + nomObjet + "'.";
         joueur.getInventaire().ajouter(item);
         return "Vous prenez : " + item.getNom();
     }
@@ -394,4 +364,3 @@ public class Partie implements Serializable {
     public Zones getZoneCourante() { return joueur.getZoneActuelle(); }
     public boolean isVictoire() { return victoire; }
 }
->>>>>>> Stashed changes

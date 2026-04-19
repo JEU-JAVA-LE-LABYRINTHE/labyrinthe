@@ -1,6 +1,5 @@
 package controller;
 
-import inventaire.Inventaire;
 import items.Item;
 import items.Lettre;
 import jeu.Partie;
@@ -120,8 +119,8 @@ public class JeuController {
     public String getLettreNomZoneCourante() {
         Zones z = partie.getZoneCourante();
         if (z == null) return null;
-        if (z.isLettreDisponible() && z.getLettreRecuperee() != null) {
-            return z.getLettreRecuperee().getNom();
+        for (Item item : z.getObjetsPresents()) {
+            if (item instanceof Lettre) return item.getNom();
         }
         return null;
     }

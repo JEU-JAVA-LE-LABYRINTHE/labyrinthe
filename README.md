@@ -1,13 +1,10 @@
-<<<<<<< Updated upstream
-# labyrinthe
-=======
 # Labyrinthe - Jeu d'Aventure Temporelle
 
 Jeu d'aventure textuel en Java où le joueur voyages à travers les âges pour résoudre des énigmes et récupérer des lettres formant un mot secret.
 
 ## 🎮 Caractéristiques
 
-- **Zone Zaman**: Hub central où le joueur gère inventaire et récupère les 4 artefacts nécessaires
+- **Zone Zaman**: Hub central où le joueur gère son inventaire et récupère les 4 artefacts nécessaires
 - **Zones Temporelles**: Préhistoire, Égypte Antique, Moyen Âge, Futur (à développer)
 - **Système de Commandes**: Interface textuelle intuitive
 - **Gestion d'Inventaire**: Capacité limitée avec gestion des objets
@@ -81,6 +78,7 @@ java -cp out launcher.Launcher
 - `GestionnaireCommandes.java` - Routeur de commandes
 - `CarteZones.java` - Navigation entre zones
 - `GestionnaireSauvegarde.java` - Sérialisation (stub)
+- `GestionnaireSon.java` - Gestion audio (stub)
 
 #### `personnes`
 - `Joueur.java` - État du joueur (vies, zone, inventaire)
@@ -146,4 +144,3 @@ Pour des questions sur l'architecture ou le développement, consultez la structu
 
 **Dernière mise à jour**: Avril 2026  
 **Version**: 0.1 - Minimaliste Zaman
->>>>>>> Stashed changes
