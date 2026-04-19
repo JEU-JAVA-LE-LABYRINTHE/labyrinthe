@@ -8,18 +8,9 @@ import jeu.Partie;
 import zones.Zones;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class JeuController {
     private Partie partie;
-    
-    private static final Map<String, String> DIRECTION_MAP = Map.ofEntries(
-        Map.entry("ouest", "moveOuest"),
-        Map.entry("o", "moveOuest"),
-        Map.entry("est", "moveEst"),
-        Map.entry("e", "moveEst"),
-        Map.entry("z", "retourZaman")
-    );
 
     public JeuController() {
         this.partie = new Partie();
@@ -27,38 +18,6 @@ public class JeuController {
 
     public void demarrerJeu() {
         partie.demarrer();
-    }
-
-    public boolean deplacerJoueur(String direction) {
-        String d = direction == null ? "" : direction.trim().toLowerCase();
-        String msg = executerMouvement(d);
-        
-        if (msg == null) {
-            return false;
-        }
-        
-        System.out.println(msg);
-        System.out.println(partie.statusTexte());
-        return true;
-    }
-    
-    private String executerMouvement(String direction) {
-        return switch (direction) {
-            case "ouest", "o" -> partie.moveOuest();
-            case "est", "e" -> partie.moveEst();
-            case "z" -> partie.retourZaman();
-            default -> null;
-        };
-    }
-
-    public String ramasserObjet(String nomObjet) {
-        String msg = partie.prendreObjet(nomObjet);
-        System.out.println(msg);
-        return msg;
-    }
-
-    public void afficherEtatJeu() {
-        System.out.println(partie.statusTexte());
     }
 
     public String traiterCommande(String commande) {
@@ -88,10 +47,6 @@ public class JeuController {
     public String getNomZoneCourante() {
         Zones z = getZoneCourante();
         return z == null ? "-" : z.getNom();
-    }
-
-    public String sauvegarder() {
-        return partie.sauvegarder();
     }
 
     public String sauvegarder() {

@@ -32,11 +32,6 @@ public class Zaman extends Zones {
     }
 
     @Override
-    public boolean ouvrirCoffre() {
-        return false;
-    }
-
-    @Override
     public String afficherIndice() {
         return "Aucun coffre/énigme dans Zaman.";
     }

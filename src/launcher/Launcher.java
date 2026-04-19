@@ -26,7 +26,6 @@ public class Launcher {
             frame.setJeuController(jeuController);
             jeuController.demarrerJeu();
             frame.setVisible(true);
-            jeuController.afficherEtatJeu();
         });
     }
 }

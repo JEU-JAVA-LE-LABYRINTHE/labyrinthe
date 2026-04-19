@@ -302,11 +302,4 @@ public class LabyrinthePanel extends JPanel {
         g2.drawString(texte, x, y);
     }
 
-    public void changerFond() {
-        // Changer dynamiquement l'image de fond
-        if (imageFond != null) {
-            // Logique pour alterner entre différentes images
-            repaint();
-        }
-    }
 }

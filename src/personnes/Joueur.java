@@ -44,28 +44,9 @@ public class Joueur extends Personne {
         lettres.add(lettre);
     }
 
-    public void gererObjets() {
-        inventaire.getObjets().forEach(item -> System.out.println("- " + item.getNom()));
-    }
-
-    public void setZone(Zones z) {
-        seDeplacer(z);
-    }
-
     @Override
     public void afficherInfo() {
         System.out.println(toString());
-    }
-
-    public void ajouterObjet(inventaire.Inventaire inventaire, items.Item item) {
-    }
-
-    public boolean ajouterObjet(items.Item item) {
-        boolean ok = inventaire.ajouter(item);
-        if (ok && item instanceof Lettre) {
-            ajouterLettre((Lettre) item);
-        }
-        return ok;
     }
 
     public boolean contientObjet(String nomObjet) {

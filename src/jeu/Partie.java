@@ -53,14 +53,6 @@ public class Partie implements Serializable {
         joueur.seDeplacer(carteZones.getZoneDepart());
     }
 
-    public void jouer() {
-        demarrer();
-    }
-
-    public boolean verifierVictoire() {
-        return !jeuEnCours;
-    }
-
     public boolean isJeuEnCours() {
         return jeuEnCours && joueur != null && joueur.estEnVie();
     }

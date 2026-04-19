@@ -73,10 +73,6 @@ public abstract class Zones implements Serializable {
         return true;
     }
 
-    public boolean ouvrirCoffre() {
-        return false;
-    }
-
     public String afficherIndice() {
         if (terminee) return "Rien à chercher ici : zone déjà terminée.";
         if (enigme == null) return "Aucune énigme dans cette zone.";
