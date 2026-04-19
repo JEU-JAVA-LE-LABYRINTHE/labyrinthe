@@ -77,7 +77,13 @@ public class Partie implements Serializable {
         if (next.isTerminee()) return "Cette zone est déjà terminée. Vous ne pouvez plus y entrer.";
         if (next.isBloquee()) return "⚿ Zone verrouillée ! Résolvez d'abord l'énigme de la zone précédente pour progresser.";
         joueur.seDeplacer(next);
-        return "[ " + next.getNom().toUpperCase() + " ]\n" + next.afficherDescription();
+        String msg = "[ " + next.getNom().toUpperCase() + " ]\n" + next.afficherDescription();
+        Coffre coffre = next.getCoffre();
+        if (coffre != null && coffre.estOuvert() && !next.isTerminee()) {
+            Enigme e = next.getEnigme();
+            if (e != null) msg += "\n\n[ ÉNIGME EN COURS ]\n" + e.getQuestion();
+        }
+        return msg;
     }
 
     public String moveEst() {
@@ -163,14 +169,10 @@ public class Partie implements Serializable {
             return msg;
         }
         joueur.perdreUneVie();
-        Enigme e = z.getEnigme();
-        int restantes = e != null ? e.getTentativesRestantes() : 0;
-        String msg = "✗ Mauvaise réponse ! Vous perdez une vie. Vies restantes : " + joueur.getNombreVies();
+        String msg = "✗ Mauvaise réponse ! Vies restantes : " + joueur.getNombreVies();
         if (!joueur.estEnVie()) {
             jeuEnCours = false;
             msg += "\n☠ Plus de vies ! GAME OVER.";
-        } else {
-            msg += "\n  " + restantes + " tentative(s) restante(s) sur ce coffre.";
         }
         return msg;
     }
