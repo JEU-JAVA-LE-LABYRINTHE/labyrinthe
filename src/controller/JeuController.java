@@ -126,6 +126,19 @@ public class JeuController {
         return z.getEnigme().getQuestion();
     }
 
+    public boolean toutesLettresCollectees() {
+        return partie.getJoueur().getLettres().size() >= 4;
+    }
+
+    public boolean estAZaman() {
+        Zones z = partie.getZoneCourante();
+        return z != null && z.getNom().equals("Zaman");
+    }
+
+    public String getLettresJoueur() {
+        return partie.getJoueur().lettresPourMot();
+    }
+
     public boolean isEnigmeActive() {
         if (!partie.isJeuEnCours()) return false;
         Zones z = partie.getZoneCourante();

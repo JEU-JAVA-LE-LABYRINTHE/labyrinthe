@@ -199,15 +199,14 @@ public class Partie implements Serializable {
         if (zaman.verifierMotSecret(mot)) {
             jeuEnCours = false;
             victoire = true;
-            return "════════════════════════════════\n" +
-                   "         ★  VICTOIRE !  ★\n" +
-                   "════════════════════════════════\n" +
-                   "La porte du labyrinthe s'ouvre !\n" +
-                   "Réponse : " + mot.toUpperCase() + "\n\n" +
-                   joueur.getNom() + " s'échappe du labyrinthe temporel !\n" +
-                   "════════════════════════════════";
+            return "VICTOIRE";
         }
-        return "Mauvaise réponse. Recomposez le mot avec vos lettres : " + joueur.lettresPourMot();
+        joueur.perdreUneVie();
+        if (!joueur.estEnVie()) {
+            jeuEnCours = false;
+            return "GAME_OVER";
+        }
+        return "MAUVAISE_REPONSE:" + joueur.getNombreVies();
     }
 
     public String observer() {

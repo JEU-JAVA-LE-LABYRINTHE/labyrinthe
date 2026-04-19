@@ -180,8 +180,9 @@ public class PanneauControle extends JPanel {
         if (!validerController()) return;
         if (commande == null || commande.isEmpty()) return;
 
-        boolean enigmeAvant    = jeuController.isEnigmeActive();
-        boolean enCoursAvant   = jeuController.isJeuEnCours();
+        boolean enigmeAvant  = jeuController.isEnigmeActive();
+        boolean enCoursAvant = jeuController.isJeuEnCours();
+        boolean aZamanAvant  = jeuController.estAZaman();
 
         afficherDansConsole("> " + commande);
         try {
@@ -193,13 +194,17 @@ public class PanneauControle extends JPanel {
         zoneSaisie.setText("");
         frame.getLabyrinthePanel().repaint();
 
-        // Game over : propose nouvelle partie ou chargement
         if (enCoursAvant && !jeuController.isJeuEnCours() && !jeuController.isVictoire()) {
             proposerNouvellePartie();
             return;
         }
 
-        // Ouvre le dialogue dès que l'énigme devient active (coffre ouvert, entrée dans la zone)
+        // Arrivée à Zaman avec toutes les lettres → demander le mot secret
+        if (!aZamanAvant && jeuController.estAZaman() && jeuController.toutesLettresCollectees()) {
+            demanderMotFinal();
+            return;
+        }
+
         if (!enigmeAvant && jeuController.isEnigmeActive()) {
             demanderReponseEnigme();
         }
@@ -243,6 +248,52 @@ public class PanneauControle extends JPanel {
                 proposerNouvellePartie();
                 return;
             }
+        }
+        // Après résolution de la dernière énigme, proposer le retour à Zaman
+        if (jeuController.toutesLettresCollectees() && jeuController.isJeuEnCours()) {
+            proposerRetourZaman();
+        }
+    }
+
+    private void proposerRetourZaman() {
+        JOptionPane.showMessageDialog(frame,
+            "Toutes les lettres collectées : " + jeuController.getLettresJoueur()
+            + "\n\nRetournez à Zaman pour révéler le mot secret !",
+            "Lettres complètes", JOptionPane.INFORMATION_MESSAGE);
+        // Déplace automatiquement le joueur à Zaman
+        afficherDansConsole("> Z");
+        String msg = jeuController.traiterCommande("Z");
+        afficherDansConsole(msg != null ? msg : "");
+        frame.getLabyrinthePanel().repaint();
+        demanderMotFinal();
+    }
+
+    private void demanderMotFinal() {
+        while (jeuController.isJeuEnCours() && !jeuController.isVictoire()) {
+            String mot = JOptionPane.showInputDialog(frame,
+                "Vos lettres : " + jeuController.getLettresJoueur()
+                + "\n\nFormez le mot secret avec ces lettres :");
+            if (mot == null || mot.trim().isEmpty()) break;
+
+            String resultat = jeuController.traiterCommande("DEVERROUILLER " + mot.trim());
+            afficherDansConsole(resultat != null ? resultat : "");
+            frame.getLabyrinthePanel().repaint();
+
+            if (jeuController.isVictoire()) {
+                JOptionPane.showMessageDialog(frame,
+                    "Félicitations " + jeuController.getNomJoueur() + " !\n"
+                    + "Vous avez trouvé le mot secret : " + mot.toUpperCase()
+                    + "\n\nVous vous échappez du labyrinthe temporel !",
+                    "★ VICTOIRE ★", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            if (!jeuController.isJeuEnCours()) {
+                proposerNouvellePartie();
+                return;
+            }
+            JOptionPane.showMessageDialog(frame,
+                "Mauvaise réponse ! Vous perdez une vie.\nVies restantes : " + jeuController.getNombreVies(),
+                "Mauvaise réponse", JOptionPane.WARNING_MESSAGE);
         }
     }
 
