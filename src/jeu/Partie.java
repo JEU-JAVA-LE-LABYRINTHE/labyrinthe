@@ -1,0 +1,397 @@
+<<<<<<< Updated upstream
+=======
+package jeu;
+
+import inventaire.Inventaire;
+import items.Item;
+import items.Lettre;
+import items.Objet;
+import personnes.Joueur;
+import zones.*;
+import java.io.Serializable;
+import java.util.List;
+
+public class Partie implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private CarteZones carteZones;
+    private Joueur joueur;
+    private boolean jeuEnCours;
+    private boolean victoire;
+    private String nomJoueur;
+
+    public transient GestionnaireCommandes gestionnaireCmd;
+    public transient GestionnaireSauvegarde gestionnaireSauvegarde;
+
+    public Partie() {
+        this.carteZones = new CarteZones();
+        this.gestionnaireCmd = new GestionnaireCommandes();
+        this.gestionnaireSauvegarde = new GestionnaireSauvegarde();
+        this.nomJoueur = "Explorateur";
+        resetPartie();
+    }
+
+    public void resetPartie() {
+        this.joueur = new Joueur(nomJoueur != null ? nomJoueur : "Explorateur", carteZones.getZoneDepart(), 3, 6);
+        this.jeuEnCours = true;
+        this.victoire = false;
+    }
+
+    public String traiterCommande(String input) {
+        if (gestionnaireCmd == null) gestionnaireCmd = new GestionnaireCommandes();
+        if (!jeuEnCours) return "Partie terminée. Tapez NOUVELLE pour recommencer.";
+        return gestionnaireCmd.traiterCommandes(input, this, joueur);
+    }
+
+    public void demarrer() {
+        resetPartie();
+        joueur.seDeplacer(carteZones.getZoneDepart());
+    }
+
+    public void demarrer(String nom) {
+        this.nomJoueur = (nom != null && !nom.trim().isEmpty()) ? nom.trim() : "Explorateur";
+        this.carteZones = new CarteZones();
+        resetPartie();
+        joueur.seDeplacer(carteZones.getZoneDepart());
+    }
+
+    public void jouer() {
+        demarrer();
+    }
+
+    public boolean verifierVictoire() {
+        return !jeuEnCours;
+    }
+
+    public boolean isJeuEnCours() {
+        return jeuEnCours && joueur != null && joueur.estEnVie();
+    }
+
+    // ── Déplacements ─────────────────────────────────────────────────────────
+
+    public String moveOuest() {
+        Zones current = joueur.getZoneActuelle();
+        Zones next = carteZones.avancerTemps(current);
+        if (next == null || next == current) {
+            if (current instanceof Zaman) return "Toutes les zones ont été explorées.";
+            return "Vous êtes déjà dans la zone la plus lointaine accessible.";
+        }
+        if (next.isTerminee()) return "Cette zone est déjà terminée. Vous ne pouvez plus y entrer.";
+        if (next.isBloquee()) return "⚿ Zone verrouillée ! Résolvez d'abord l'énigme de la zone précédente pour progresser.";
+        joueur.seDeplacer(next);
+        StringBuilder sb = new StringBuilder("[ " + next.getNom().toUpperCase() + " ]\n");
+        sb.append(next.afficherDescription());
+        Enigme enigme = next.getEnigme();
+        if (enigme != null) {
+            Coffre coffre = next.getCoffre();
+            if (coffre != null && !coffre.estOuvert()) {
+                next.chercherCoffre();
+                coffre.ouvrir();
+            }
+            sb.append("\n\n══════════════════════════════════\n");
+            if (enigme.estResolue()) {
+                sb.append("✓ Énigme déjà résolue !\nVous pouvez récupérer votre lettre.");
+                sb.append("\n→ Cliquez sur 'Récupérer lettre' ou tapez PRENDRE lettre.");
+            } else {
+                sb.append("ÉNIGME :\n").append(enigme.getQuestion());
+                sb.append("\n→ Utilisez R <réponse> pour répondre.");
+            }
+            sb.append("\n══════════════════════════════════");
+        }
+        return sb.toString();
+    }
+
+    public String moveEst() {
+        Zones current = joueur.getZoneActuelle();
+        Zones prev = carteZones.reculerTemps(current);
+        if (prev == current) return "Vous êtes déjà à Zaman.";
+        if (prev != carteZones.getZaman() && prev.isTerminee())
+            return "Cette zone est déjà terminée. Vous ne pouvez plus y entrer.";
+        joueur.seDeplacer(prev);
+        return "[ " + prev.getNom().toUpperCase() + " ]\n" + prev.afficherDescription();
+    }
+
+    public String retourZaman() {
+        Zaman z = carteZones.getZaman();
+        joueur.seDeplacer(z);
+        return "[ ZAMAN ]\n" + z.afficherDescription() + "\n\n" + z.afficherObjetsDisponibles();
+    }
+
+    // ── Exploration ───────────────────────────────────────────────────────────
+
+    public String regarder() {
+        Zones z = joueur.getZoneActuelle();
+        if (z == null) return "Aucune zone.";
+        StringBuilder sb = new StringBuilder("[ " + z.getNom().toUpperCase() + " ]\n");
+        sb.append(z.afficherDescription());
+        if (z instanceof Zaman) {
+            sb.append("\n\n").append(((Zaman) z).afficherObjetsDisponibles());
+            if (joueur.getLettres().size() == 4) {
+                sb.append("\n\n★ Vous avez toutes les lettres : ").append(joueur.lettresPourMot());
+                sb.append("\n  → Tapez DEVERROUILLER pour révéler l'énigme finale.");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String chercher() {
+        Zones z = joueur.getZoneActuelle();
+        if (z instanceof Zaman) return "Il n'y a pas de coffre caché à Zaman.";
+        if (z.isTerminee()) return "Cette zone est terminée. Vous ne pouvez plus interagir ici.";
+        if (z.isCoffreTrouve()) return "Vous avez déjà trouvé le coffre-fort ici.";
+        boolean trouve = z.chercherCoffre();
+        if (!trouve) return "Vous ne trouvez rien.";
+        if (z instanceof Prehistoire) return "Quelque chose de massif se dissimule dans la roche.";
+        if (z instanceof EgypteAntique) return "Une des fresques semble cacher quelque chose derrière elle.";
+        if (z instanceof MoyenAge) return "Un objet imposant se trouve dans un coin, sous un drap poussiéreux.";
+        if (z instanceof Futur) return "Une structure vitrée dans le fond de la pièce attire votre regard.";
+        return "Vous trouvez quelque chose.";
+    }
+
+    public String ouvrir() {
+        Zones z = joueur.getZoneActuelle();
+        if (z instanceof Zaman) return "Il n'y a pas de coffre-fort à Zaman.";
+        if (!z.isCoffreTrouve()) return "Rien à ouvrir ici.";
+        Coffre coffre = z.getCoffre();
+        if (coffre == null || z.isTerminee()) return "Rien à ouvrir ici.";
+        if (coffre.estOuvert()) {
+            Enigme e = z.getEnigme();
+            return e != null ? e.getQuestion() : "Le coffre est ouvert.";
+        }
+        String objetRequis = coffre.getObjetRequis();
+        if (!joueur.getInventaire().contient(objetRequis)) {
+            return "Ce coffre nécessite : " + objetRequis + ".";
+        }
+        coffre.ouvrir();
+        Enigme e = z.getEnigme();
+        return "Le coffre s'ouvre.\n\n" + (e != null ? e.getQuestion() : "");
+    }
+
+    public String repondre(String rep) {
+        Zones z = joueur.getZoneActuelle();
+        if (z instanceof Zaman) return "Il n'y a pas d'énigme à Zaman.";
+        if (!z.isCoffreTrouve() || z.getCoffre() == null || !z.getCoffre().estOuvert())
+            return "Ouvrez d'abord le coffre-fort (commande OUVRIR).";
+        if (z.isTerminee()) return "Vous avez déjà résolu cette zone.";
+        if (z.getEnigme() != null && z.getEnigme().estResolue())
+            return "Énigme déjà résolue ! Récupérez maintenant votre lettre.\n→ Cliquez sur 'Récupérer lettre' ou tapez PRENDRE lettre.";
+        boolean ok = z.repondre(rep);
+        if (ok) {
+            carteZones.debloquerProchaineZone(z);
+            Lettre lettre = z.getLettreRecuperee();
+            String msg = "✓ Bonne réponse !\nVous pouvez maintenant récupérer la lettre";
+            if (lettre != null) msg += " '" + lettre.obtenirCaractere() + "'";
+            msg += ".\n→ Cliquez sur 'Récupérer lettre' ou tapez PRENDRE lettre.";
+            msg += "\n⚿ La zone suivante est maintenant déverrouillée !";
+            return msg;
+        }
+        joueur.perdreUneVie();
+        Enigme e = z.getEnigme();
+        int restantes = e != null ? e.getTentativesRestantes() : 0;
+        String msg = "✗ Mauvaise réponse ! Vous perdez une vie. Vies restantes : " + joueur.getNombreVies();
+        if (!joueur.estEnVie()) {
+            jeuEnCours = false;
+            msg += "\n☠ Plus de vies ! GAME OVER.";
+        } else {
+            msg += "\n  " + restantes + " tentative(s) restante(s) sur ce coffre.";
+        }
+        return msg;
+    }
+
+    public String obtenirIndice() {
+        return joueur.getZoneActuelle().afficherIndice();
+    }
+
+    public String deverrouiller(String mot) {
+        Zones z = joueur.getZoneActuelle();
+        if (!(z instanceof Zaman)) return "Revenez à Zaman (Z) pour déverrouiller la sortie.";
+        if (joueur.getLettres().size() < 4)
+            return "Il vous manque des lettres (" + joueur.getLettres().size() + "/4). Explorez toutes les zones.";
+        Zaman zaman = (Zaman) z;
+        if (mot == null || mot.trim().isEmpty()) {
+            return "══════════════════════════════════\n" +
+                   "        ÉNIGME FINALE\n" +
+                   "══════════════════════════════════\n" +
+                   "Vos lettres : " + joueur.lettresPourMot() + "\n\n" +
+                   zaman.getQuestionFinale() + "\n\n" +
+                   "Répondez avec : DEVERROUILLER <votre réponse>\n" +
+                   "══════════════════════════════════";
+        }
+        if (zaman.verifierMotSecret(mot)) {
+            jeuEnCours = false;
+            victoire = true;
+            return "════════════════════════════════\n" +
+                   "         ★  VICTOIRE !  ★\n" +
+                   "════════════════════════════════\n" +
+                   "La porte du labyrinthe s'ouvre !\n" +
+                   "Réponse : " + mot.toUpperCase() + "\n\n" +
+                   joueur.getNom() + " s'échappe du labyrinthe temporel !\n" +
+                   "════════════════════════════════";
+        }
+        return "Mauvaise réponse. Recomposez le mot avec vos lettres : " + joueur.lettresPourMot();
+    }
+
+    public String observer() {
+        Zones z = joueur.getZoneActuelle();
+        if (z instanceof Zaman) {
+            return ((Zaman) z).afficherObjetsDisponibles();
+        }
+        z.setObserve(true);
+        List<Item> objets = z.getObjetsPresents();
+        if (objets.isEmpty()) return "Vous regardez attentivement... rien de particulier ne retient votre attention.";
+        StringBuilder sb = new StringBuilder("Vous observez la zone :\n");
+        for (Item item : objets) {
+            sb.append("  - ").append(item.getNom()).append(" : ").append(item.getDescription()).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    // ── Inventaire ────────────────────────────────────────────────────────────
+
+    public String prendreObjet(String nomObjet) {
+        Zones z = joueur.getZoneActuelle();
+
+        if (z instanceof Zaman) {
+            long nbObjets = joueur.getInventaire().getObjets().stream()
+                .filter(i -> !(i instanceof Lettre)).count();
+            if (nbObjets >= 2) return "Sac plein (2 objets max). Déposez un objet d'abord : D <objet>.";
+            Objet pris = ((Zaman) z).prendreObjetDisponible(nomObjet);
+            if (pris == null) return "Objet introuvable : '" + nomObjet + "'.";
+            joueur.getInventaire().ajouter(pris);
+            return "Vous prenez : " + pris.getNom() + "  (" + (nbObjets + 1) + "/2 objets)";
+        }
+
+        // Zones non-Zaman : collecte de la lettre uniquement si l'énigme est résolue
+        String nomLower = nomObjet.trim().toLowerCase();
+        boolean demandantLettre = nomLower.contains("lettre");
+
+        if (demandantLettre || (z.getLettreRecuperee() != null &&
+                z.getLettreRecuperee().getNom().toLowerCase().contains(nomLower))) {
+            if (!z.isLettreDisponible()) {
+                return "Résolvez d'abord l'énigme pour récupérer la lettre.";
+            }
+            Lettre lc = z.getLettreRecuperee();
+            if (lc == null) return "Aucune lettre à récupérer ici.";
+            boolean dejaCollectee = joueur.getLettres().stream()
+                .anyMatch(l -> l.obtenirZoneOrigine().equals(lc.obtenirZoneOrigine()));
+            if (dejaCollectee) return "Vous avez déjà la lettre de cette zone.";
+            joueur.ajouterLettre(lc);
+            joueur.getInventaire().ajouter(lc);
+            z.setTerminee(true);
+            int total = joueur.getLettres().size();
+            String msg = "Lettre '" + lc.obtenirCaractere() + "' collectée !  (" + total + "/4)";
+            if (total == 4) {
+                msg += "\n★ Toutes les lettres collectées : " + joueur.lettresPourMot()
+                    + "\n  → Retournez à Zaman (Z) et tapez DEVERROUILLER pour l'énigme finale !";
+            } else {
+                msg += "\n  Il vous reste " + (4 - total) + " lettre(s) à trouver dans les autres zones.";
+            }
+            return msg;
+        }
+
+        Item item = z.prendreItemPresent(nomObjet);
+        if (item == null) return "Objet introuvable : '" + nomObjet + "'.";
+        joueur.getInventaire().ajouter(item);
+        return "Vous prenez : " + item.getNom();
+    }
+
+    public String deposer(String nom) {
+        Zones z = joueur.getZoneActuelle();
+        if (!(z instanceof Zaman)) return "Vous ne pouvez déposer des objets qu'à Zaman.";
+        Item item = joueur.getInventaire().search(nom);
+        if (item == null) return "Vous n'avez pas '" + nom + "' dans votre sac.";
+        if (item instanceof Lettre) return "Vous ne pouvez pas déposer une lettre.";
+        joueur.getInventaire().retirer(item);
+        ((Zaman) z).ajouterObjetDisponible((Objet) item);
+        return "Vous déposez " + item.getNom() + " sur l'établi de Zaman.";
+    }
+
+    public String laisserObjetDansZone(String nom) {
+        Zones z = joueur.getZoneActuelle();
+        if (z instanceof Zaman) return deposer(nom);
+        Item item = joueur.getInventaire().search(nom);
+        if (item == null) return "Vous n'avez pas '" + nom + "' dans votre sac.";
+        if (item instanceof Lettre) return "Vous ne pouvez pas laisser une lettre.";
+        joueur.getInventaire().retirer(item);
+        z.ajouterObjet(item);
+        return "Vous laissez " + item.getNom() + " dans la zone.";
+    }
+
+    public String inventaireTexte() {
+        Inventaire inv = joueur.getInventaire();
+        if (inv.getTaille() == 0) return "Sac vide.";
+        long nbObjets = inv.getObjets().stream().filter(i -> !(i instanceof Lettre)).count();
+        StringBuilder sb = new StringBuilder("SAC (" + nbObjets + "/2 objets");
+        if (!joueur.getLettres().isEmpty()) sb.append(" + ").append(joueur.getLettres().size()).append(" lettre(s)");
+        sb.append(") :\n");
+        for (Item item : inv.getObjets()) {
+            sb.append("  - ").append(item.getNom());
+            if (item instanceof Lettre) sb.append(" [LETTRE]");
+            sb.append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    // ── Infos ────────────────────────────────────────────────────────────────
+
+    public String statusTexte() {
+        Zones z = joueur.getZoneActuelle();
+        long nbObjets = joueur.getInventaire().getObjets().stream().filter(i -> !(i instanceof Lettre)).count();
+        return "─── STATUS ───────────────────────\n" +
+               "Explorateur : " + joueur.getNom() + "\n" +
+               "Vies        : " + joueur.getNombreVies() + "\n" +
+               "Zone        : " + (z == null ? "-" : z.getNom()) + "\n" +
+               "Lettres     : " + (joueur.getLettres().isEmpty() ? "aucune" : joueur.lettresPourMot()) +
+               "  (" + joueur.getLettres().size() + "/4)\n" +
+               "Sac         : " + nbObjets + "/2 objets\n" +
+               (joueur.getLettres().size() == 4
+                   ? "──────────────────────────────────\n★ Allez à Zaman et tapez DEVERROUILLER !"
+                   : "──────────────────────────────────");
+    }
+
+    public String afficherAide() {
+        Zones z = joueur.getZoneActuelle();
+        StringBuilder sb = new StringBuilder("Actions disponibles :\n");
+        sb.append("  L  : Regarder   |  STATUS\n");
+        if (z instanceof Zaman) {
+            sb.append("  O  : Avancer dans le temps\n");
+            sb.append("  P <objet>  : Prendre   |  D <objet>  : Déposer\n");
+            sb.append("  SAC  |  SAVE  |  LOAD\n");
+            if (joueur.getLettres().size() == 4) sb.append("  DEVERROUILLER <mot>\n");
+        } else if (z.isTerminee()) {
+            sb.append("  O  : Zone suivante   |  E  : Reculer   |  Z  : Zaman\n");
+        } else if (!z.isCoffreTrouve()) {
+            sb.append("  O  : Zone suivante   |  E  : Reculer   |  Z  : Zaman\n");
+            sb.append("  CH : Chercher\n");
+        } else if (z.getCoffre() != null && !z.getCoffre().estOuvert()) {
+            sb.append("  OUVRIR\n");
+            sb.append("  E  : Reculer   |  Z  : Zaman\n");
+        } else {
+            sb.append("  R <réponse>   |   INDICE\n");
+            sb.append("  E  : Reculer   |  Z  : Zaman\n");
+        }
+        return sb.toString().trim();
+    }
+
+    public String nouvellePartie() {
+        demarrer();
+        return "Nouvelle partie démarrée !";
+    }
+
+    public String sauvegarder() {
+        if (gestionnaireSauvegarde == null) gestionnaireSauvegarde = new GestionnaireSauvegarde();
+        Partie saved = gestionnaireSauvegarde.sauvegarder(this);
+        return saved != null ? "Partie sauvegardée." : "Erreur lors de la sauvegarde.";
+    }
+
+    public String charger() {
+        if (gestionnaireSauvegarde == null) gestionnaireSauvegarde = new GestionnaireSauvegarde();
+        Partie p = gestionnaireSauvegarde.charger();
+        return p != null ? "Partie chargée." : "Aucune sauvegarde trouvée.";
+    }
+
+    public Joueur getJoueur() { return joueur; }
+    public Zones getZoneCourante() { return joueur.getZoneActuelle(); }
+    public boolean isVictoire() { return victoire; }
+}
+>>>>>>> Stashed changes
