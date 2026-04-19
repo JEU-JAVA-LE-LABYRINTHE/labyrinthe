@@ -182,7 +182,7 @@ public class PanneauControle extends JPanel {
 
     private void demanderReponseEnigme() {
         while (jeuController.isEnigmeActive()) {
-            String reponse = JOptionPane.showInputDialog(frame, "Votre réponse à l'énigme :");
+            String reponse = JOptionPane.showInputDialog(frame, jeuController.getQuestionEnigme());
             if (reponse == null || reponse.trim().isEmpty()) break; // annulation → le joueur peut retaper manuellement
             afficherDansConsole("> R " + reponse.trim());
             try {

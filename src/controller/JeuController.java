@@ -120,6 +120,12 @@ public class JeuController {
         return null;
     }
 
+    public String getQuestionEnigme() {
+        Zones z = partie.getZoneCourante();
+        if (z == null || z.getEnigme() == null) return "Votre réponse :";
+        return z.getEnigme().getQuestion();
+    }
+
     public boolean isEnigmeActive() {
         if (!partie.isJeuEnCours()) return false;
         Zones z = partie.getZoneCourante();
