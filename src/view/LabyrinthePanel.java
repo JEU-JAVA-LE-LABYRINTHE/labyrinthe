@@ -93,6 +93,9 @@ public class LabyrinthePanel extends JPanel {
         if (!nomImage.equals(zoneActuelleChargee)) {
             chargerImageParDefaut(nomImage);
             zoneActuelleChargee = nomImage;
+            if (!"Zaman".equals(nomZone)) {
+                message = "";
+            }
         }
     }
     
