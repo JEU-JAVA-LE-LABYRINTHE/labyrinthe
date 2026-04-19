@@ -24,6 +24,7 @@ public class PanneauControle extends JPanel {
     private JButton boutonRepondre;
     private JButton boutonEtat;
     private JButton boutonAide;
+    private JButton boutonNouvellePartie;
 
     private JTextArea console;
 
@@ -48,6 +49,10 @@ public class PanneauControle extends JPanel {
         boutonRepondre         = new JButton("Répondre");
         boutonEtat             = new JButton("État");
         boutonAide             = new JButton("Aide");
+        boutonNouvellePartie   = new JButton("Nouvelle partie");
+        boutonNouvellePartie.setBackground(new Color(180, 60, 60));
+        boutonNouvellePartie.setForeground(Color.WHITE);
+        boutonNouvellePartie.setOpaque(true);
 
         // Ligne de commandes (haut)
         JPanel ligneCommandes = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 4));
@@ -69,6 +74,8 @@ public class PanneauControle extends JPanel {
         ligneCommandes.add(boutonEtat);
         ligneCommandes.add(new JLabel("|"));
         ligneCommandes.add(boutonAide);
+        ligneCommandes.add(new JLabel("|"));
+        ligneCommandes.add(boutonNouvellePartie);
 
         // Console (bas)
         console = new JTextArea(8, 0);
@@ -155,6 +162,17 @@ public class PanneauControle extends JPanel {
         boutonAide.addActionListener(e -> {
             AideDialog dialog = new AideDialog(frame);
             dialog.setVisible(true);
+        });
+
+        boutonNouvellePartie.addActionListener(e -> {
+            if (!validerController()) return;
+            String nom = jeuController.getNomJoueur();
+            jeuController.demarrerNouvellePartie(nom);
+            afficherDansConsole("═══════════════════════════════");
+            afficherDansConsole("  Nouvelle partie — Bonne chance, " + nom + " !");
+            afficherDansConsole("═══════════════════════════════");
+            afficherDansConsole(jeuController.traiterCommande("REGARDER"));
+            frame.getLabyrinthePanel().repaint();
         });
     }
 
