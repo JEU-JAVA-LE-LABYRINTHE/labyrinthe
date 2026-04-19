@@ -180,7 +180,8 @@ public class PanneauControle extends JPanel {
         if (!validerController()) return;
         if (commande == null || commande.isEmpty()) return;
 
-        boolean enigmeAvant = jeuController.isEnigmeActive();
+        boolean enigmeAvant    = jeuController.isEnigmeActive();
+        boolean enCoursAvant   = jeuController.isJeuEnCours();
 
         afficherDansConsole("> " + commande);
         try {
@@ -192,16 +193,44 @@ public class PanneauControle extends JPanel {
         zoneSaisie.setText("");
         frame.getLabyrinthePanel().repaint();
 
+        // Game over : propose nouvelle partie ou chargement
+        if (enCoursAvant && !jeuController.isJeuEnCours() && !jeuController.isVictoire()) {
+            proposerNouvellePartie();
+            return;
+        }
+
         // Ouvre le dialogue dès que l'énigme devient active (coffre ouvert, entrée dans la zone)
         if (!enigmeAvant && jeuController.isEnigmeActive()) {
             demanderReponseEnigme();
         }
     }
 
+    private void proposerNouvellePartie() {
+        String[] options = {"Nouvelle partie", "Charger une partie"};
+        int choix = JOptionPane.showOptionDialog(frame,
+            "☠ GAME OVER !\nQue souhaitez-vous faire ?",
+            "Fin de partie",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+            null, options, options[0]);
+
+        String nom = jeuController.getNomJoueur();
+        if (choix == 1) {
+            String msg = jeuController.charger();
+            afficherDansConsole(msg);
+        } else {
+            jeuController.demarrerNouvellePartie(nom);
+            afficherDansConsole("═══════════════════════════════");
+            afficherDansConsole("  Nouvelle partie — Bonne chance, " + nom + " !");
+            afficherDansConsole("═══════════════════════════════");
+            afficherDansConsole(jeuController.traiterCommande("REGARDER"));
+        }
+        frame.getLabyrinthePanel().repaint();
+    }
+
     private void demanderReponseEnigme() {
         while (jeuController.isEnigmeActive()) {
             String reponse = JOptionPane.showInputDialog(frame, jeuController.getQuestionEnigme());
-            if (reponse == null || reponse.trim().isEmpty()) break; // annulation → le joueur peut retaper manuellement
+            if (reponse == null || reponse.trim().isEmpty()) break;
             afficherDansConsole("> R " + reponse.trim());
             try {
                 String msg = jeuController.traiterCommande("R " + reponse.trim());
@@ -210,6 +239,10 @@ public class PanneauControle extends JPanel {
                 afficherDansConsole("[Erreur] " + ex.getMessage());
             }
             frame.getLabyrinthePanel().repaint();
+            if (!jeuController.isJeuEnCours() && !jeuController.isVictoire()) {
+                proposerNouvellePartie();
+                return;
+            }
         }
     }
 
