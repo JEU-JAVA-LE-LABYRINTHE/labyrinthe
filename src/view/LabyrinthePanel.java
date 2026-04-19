@@ -27,27 +27,27 @@ public class LabyrinthePanel extends JPanel {
         // Images principales par défaut
         ZONE_IMAGE_MAP.put("Zaman", "Zone0.jpg");
         ZONE_IMAGE_MAP.put("Préhistoire", "Zone 1.jpg");
-        ZONE_IMAGE_MAP.put("Égypte antique", "Zone 3.jpg");
-        ZONE_IMAGE_MAP.put("Moyen Âge", "Zone 2_1.jpg");
+        ZONE_IMAGE_MAP.put("Égypte antique", "Zone 2_1.jpg");
+        ZONE_IMAGE_MAP.put("Moyen Âge", "Zone 3.jpg");
         ZONE_IMAGE_MAP.put("Futur lointain", "Zone 4.jpg");
-        
+
         // Images variantes selon les états
         Map<String, String> prehistoireStates = new HashMap<>();
         prehistoireStates.put("default", "Zone 1.jpg");
         prehistoireStates.put("coffre_trouve", "Zone 1_1.jpg");
         prehistoireStates.put("terminee", "Zone 1_2.jpg");
         ZONE_IMAGE_STATES.put("Préhistoire", prehistoireStates);
-        
+
         Map<String, String> egypteStates = new HashMap<>();
-        egypteStates.put("default", "Zone 3.jpg");
-        egypteStates.put("coffre_trouve", "Zone 3_1.jpg");
-        egypteStates.put("terminee", "Zone 3_2.jpg");
+        egypteStates.put("default", "Zone 2_1.jpg");
+        egypteStates.put("coffre_trouve", "Zone 2_2.jpg");
+        egypteStates.put("terminee", "Zone 2_3.jpg");
         ZONE_IMAGE_STATES.put("Égypte antique", egypteStates);
-        
+
         Map<String, String> moyenAgeStates = new HashMap<>();
-        moyenAgeStates.put("default", "Zone 2_1.jpg");
-        moyenAgeStates.put("coffre_trouve", "Zone 2_2.jpg");
-        moyenAgeStates.put("terminee", "Zone 2_3.jpg");
+        moyenAgeStates.put("default", "Zone 3.jpg");
+        moyenAgeStates.put("coffre_trouve", "Zone 3_1.jpg");
+        moyenAgeStates.put("terminee", "Zone 3_2.jpg");
         ZONE_IMAGE_STATES.put("Moyen Âge", moyenAgeStates);
         
         Map<String, String> futurStates = new HashMap<>();
