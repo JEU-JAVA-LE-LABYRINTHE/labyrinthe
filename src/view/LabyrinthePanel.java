@@ -5,6 +5,7 @@ import zones.Zones;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
