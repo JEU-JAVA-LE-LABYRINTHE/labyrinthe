@@ -162,6 +162,8 @@ public class PanneauControle extends JPanel {
         if (!validerController()) return;
         if (commande == null || commande.isEmpty()) return;
 
+        boolean enigmeAvant = jeuController.isEnigmeActive();
+
         afficherDansConsole("> " + commande);
         try {
             String msg = jeuController.traiterCommande(commande);
@@ -172,15 +174,24 @@ public class PanneauControle extends JPanel {
         zoneSaisie.setText("");
         frame.getLabyrinthePanel().repaint();
 
-        if (jeuController.isEnigmeActive()) {
+        // Ouvre le dialogue dès que l'énigme devient active (coffre ouvert, entrée dans la zone)
+        if (!enigmeAvant && jeuController.isEnigmeActive()) {
             demanderReponseEnigme();
         }
     }
 
     private void demanderReponseEnigme() {
-        String reponse = JOptionPane.showInputDialog(frame, "Votre réponse à l'énigme :");
-        if (reponse != null && !reponse.trim().isEmpty()) {
-            executerCommande("R " + reponse.trim());
+        while (jeuController.isEnigmeActive()) {
+            String reponse = JOptionPane.showInputDialog(frame, "Votre réponse à l'énigme :");
+            if (reponse == null || reponse.trim().isEmpty()) break; // annulation → le joueur peut retaper manuellement
+            afficherDansConsole("> R " + reponse.trim());
+            try {
+                String msg = jeuController.traiterCommande("R " + reponse.trim());
+                afficherDansConsole(msg != null ? msg : "(pas de réponse)");
+            } catch (Exception ex) {
+                afficherDansConsole("[Erreur] " + ex.getMessage());
+            }
+            frame.getLabyrinthePanel().repaint();
         }
     }
 
