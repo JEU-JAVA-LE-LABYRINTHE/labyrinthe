@@ -69,5 +69,5 @@ public class EgypteAntique extends Zones {
         setCoffreTrouve(true);
     }
 
-    public boolean isFresqueIntacte() { return fresqueIntact; }
+    public boolean isFresqueIntact() { return fresqueIntact; }
 }

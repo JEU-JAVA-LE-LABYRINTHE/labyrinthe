@@ -1,7 +1,6 @@
 package launcher;
 
 import controller.JeuController;
-import helper.CommandeHelper;
 import view.LabyrintheFrame;
 
 import javax.swing.*;
@@ -17,9 +16,6 @@ public class Launcher {
     }
 
     public static void LancerJeu() {
-        CommandeHelper.afficherAide();
-        System.out.println();
-
         SwingUtilities.invokeLater(() -> {
             LabyrintheFrame frame = new LabyrintheFrame();
             JeuController jeuController = new JeuController();
@@ -29,4 +25,3 @@ public class Launcher {
         });
     }
 }
-
