@@ -85,10 +85,6 @@ public class JeuController {
         return partie.isVictoire();
     }
 
-    public String getLettreNomZoneCourante() {
-        return null;
-    }
-
     public String getQuestionEnigme() {
         Zones z = partie.getZoneCourante();
         if (z == null || z.getEnigme() == null) return "Votre réponse :";

@@ -1,9 +1,11 @@
 package zones;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CarteZones {
+public class CarteZones implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     private static final String[][] MOTS_ENIGMES = {
         {"LION", "Quel est le roi des animaux ?"},

@@ -20,7 +20,6 @@ public class PanneauControle extends JPanel {
     private JButton boutonUtiliser;
     private JButton boutonObserver;
     private JButton boutonLaisser;
-    private JButton boutonRecupererLettre;
     private JButton boutonRepondre;
     private JButton boutonEtat;
     private JButton boutonSauvegarder;
@@ -45,7 +44,6 @@ public class PanneauControle extends JPanel {
         boutonUtiliser = new JButton("Utiliser");
         boutonObserver = new JButton("Observer");
         boutonLaisser          = new JButton("Laisser");
-        boutonRecupererLettre  = new JButton("Récupérer lettre");
         boutonRepondre         = new JButton("Répondre");
         boutonEtat             = new JButton("État");
         boutonSauvegarder      = new JButton("Sauvegarder");
@@ -68,7 +66,6 @@ public class PanneauControle extends JPanel {
         ligneCommandes.add(boutonUtiliser);
         ligneCommandes.add(boutonObserver);
         ligneCommandes.add(boutonLaisser);
-        ligneCommandes.add(boutonRecupererLettre);
         ligneCommandes.add(boutonRepondre);
         ligneCommandes.add(new JLabel("|"));
         ligneCommandes.add(boutonEtat);
@@ -142,16 +139,6 @@ public class PanneauControle extends JPanel {
                 items.toArray(), items.get(0));
             if (choix != null) {
                 executerCommande("LAISSER " + choix);
-            }
-        });
-
-        boutonRecupererLettre.addActionListener(e -> {
-            if (!validerController()) return;
-            String nomLettre = jeuController.getLettreNomZoneCourante();
-            if (nomLettre == null) {
-                afficherDansConsole("Aucune lettre disponible dans cette zone.");
-            } else {
-                executerCommande("PRENDRE " + nomLettre);
             }
         });
 
