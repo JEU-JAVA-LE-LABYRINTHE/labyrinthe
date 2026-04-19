@@ -17,6 +17,7 @@ public class Partie implements Serializable {
     private boolean jeuEnCours;
     private boolean victoire;
     private String nomJoueur;
+    private long dateHeureSauvegarde;
 
     public transient GestionnaireCommandes gestionnaireCmd;
     public transient GestionnaireSauvegarde gestionnaireSauvegarde;
@@ -351,8 +352,42 @@ public class Partie implements Serializable {
 
     public String sauvegarder() {
         if (gestionnaireSauvegarde == null) gestionnaireSauvegarde = new GestionnaireSauvegarde();
+        dateHeureSauvegarde = System.currentTimeMillis();
         Partie saved = gestionnaireSauvegarde.sauvegarder(this);
-        return saved != null ? "Partie sauvegardée." : "Erreur lors de la sauvegarde.";
+        if (saved == null) return "Erreur lors de la sauvegarde.";
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        return "✔ Partie sauvegardée le " + sdf.format(new java.util.Date(dateHeureSauvegarde));
+    }
+
+    public String resumeChargement() {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        StringBuilder sb = new StringBuilder("═══════ PARTIE CHARGÉE ═══════\n");
+        if (dateHeureSauvegarde > 0)
+            sb.append("Sauvegardée le : ").append(sdf.format(new java.util.Date(dateHeureSauvegarde))).append("\n");
+        sb.append("Joueur   : ").append(joueur.getNom()).append("\n");
+        sb.append("Vies     : ").append(joueur.getNombreVies()).append("\n");
+        sb.append("Score    : ").append(joueur.getScore()).append("\n");
+        sb.append("Zone     : ").append(joueur.getZoneActuelle() != null ? joueur.getZoneActuelle().getNom() : "-").append("\n");
+        sb.append("Lettres  : ");
+        if (joueur.getLettres().isEmpty()) {
+            sb.append("aucune");
+        } else {
+            sb.append(joueur.lettresPourMot()).append(" (").append(joueur.getLettres().size()).append("/4)");
+        }
+        sb.append("\n");
+        long nbObjets = joueur.getInventaire().getObjets().stream()
+            .filter(i -> !(i instanceof Lettre)).count();
+        if (nbObjets == 0) {
+            sb.append("Sac      : vide\n");
+        } else {
+            sb.append("Sac      : ");
+            joueur.getInventaire().getObjets().stream()
+                .filter(i -> !(i instanceof Lettre))
+                .forEach(i -> sb.append(i.getNom()).append("  "));
+            sb.append("\n");
+        }
+        sb.append("═══════════════════════════════");
+        return sb.toString();
     }
 
     public String charger() {

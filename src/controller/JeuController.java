@@ -59,13 +59,11 @@ public class JeuController {
     public String charger() {
         GestionnaireSauvegarde gs = new GestionnaireSauvegarde();
         Partie loaded = gs.charger();
-        if (loaded == null) return "Aucune sauvegarde trouvée.";
+        if (loaded == null) return "Aucune sauvegarde trouvée (ou fichier corrompu — faites d'abord une sauvegarde).";
         this.partie = loaded;
         this.partie.gestionnaireCmd = new GestionnaireCommandes();
         this.partie.gestionnaireSauvegarde = gs;
-        return "Partie chargée — " + loaded.getJoueur().getNom()
-             + " | Vies : " + loaded.getJoueur().getNombreVies()
-             + " | Lettres : " + loaded.getJoueur().getLettres().size() + "/4";
+        return loaded.resumeChargement();
     }
 
     public String nouvellePartie() {
