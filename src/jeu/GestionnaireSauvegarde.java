@@ -21,6 +21,7 @@ public class GestionnaireSauvegarde implements Serializable {
         File fichier = new File(dossier, NOM_FICHIER);
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fichier))) {
             oos.writeObject(partie);
+            System.out.println("Sauvegarde → " + fichier.getAbsolutePath());
             return partie;
         } catch (IOException e) {
             System.err.println("Erreur sauvegarde : " + e.getMessage());
@@ -30,7 +31,11 @@ public class GestionnaireSauvegarde implements Serializable {
 
     public Partie charger() {
         File fichier = new File(obtenirDossierSauvegarde(), NOM_FICHIER);
-        if (!fichier.exists()) return null;
+        System.out.println("Chargement depuis → " + fichier.getAbsolutePath());
+        if (!fichier.exists()) {
+            System.err.println("Fichier introuvable : " + fichier.getAbsolutePath());
+            return null;
+        }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichier))) {
             return (Partie) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -48,24 +53,6 @@ public class GestionnaireSauvegarde implements Serializable {
     }
 
     private static File obtenirDossierSauvegarde() {
-        try {
-            File location = new File(
-                GestionnaireSauvegarde.class.getProtectionDomain()
-                    .getCodeSource().getLocation().toURI());
-            File base;
-            if (location.isFile()) {
-                // Exécution depuis un JAR → dossier du JAR
-                base = location.getParentFile();
-            } else {
-                // Exécution depuis l'IDE → remonter depuis out/production/labyrinthe
-                base = location;
-                for (int i = 0; i < 3; i++) {
-                    if (base.getParentFile() != null) base = base.getParentFile();
-                }
-            }
-            return new File(base, NOM_DOSSIER);
-        } catch (Exception e) {
-            return new File(System.getProperty("user.dir"), NOM_DOSSIER);
-        }
+        return new File(System.getProperty("user.dir"), NOM_DOSSIER);
     }
 }

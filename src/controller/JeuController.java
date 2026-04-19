@@ -21,6 +21,9 @@ public class JeuController {
     }
 
     public String traiterCommande(String commande) {
+        if (commande == null) return null;
+        String cmd = commande.trim().toUpperCase();
+        if (cmd.equals("LOAD") || cmd.equals("CHARGER")) return charger();
         return partie.traiterCommande(commande);
     }
 
